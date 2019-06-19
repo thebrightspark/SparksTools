@@ -10,7 +10,7 @@ import net.minecraft.util.EnumFacing.*
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
 
-class SHTool(name: String, private val material: SHToolMaterial) : Item() {
+class SHToolItem(name: String, private val material: SHToolMaterial) : Item() {
     init {
         setRegistryName(name)
         translationKey = name
@@ -21,7 +21,7 @@ class SHTool(name: String, private val material: SHToolMaterial) : Item() {
      * Gets the start and end [BlockPos] for the area to break
      */
     private fun getBreakArea(stack: ItemStack, pos: BlockPos, sideHit: EnumFacing, player: EntityPlayer): Pair<BlockPos, BlockPos> {
-        //val item = stack.item as SHTool
+        //val item = stack.item as SHToolItem
         val mineSize = 1 // TEMP
         val start = BlockPos.MutableBlockPos(pos)
         val end = BlockPos.MutableBlockPos(pos)

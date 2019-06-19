@@ -1,5 +1,6 @@
 package brightspark.sparkstools
 
+import brightspark.sparkstools.init.SHItems
 import net.minecraft.block.Block
 import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.init.Items
@@ -14,6 +15,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
 import org.apache.logging.log4j.Logger
+import java.io.File
 
 @Mod(modid = SparksTools.MOD_ID, name = SparksTools.NAME, version = SparksTools.VERSION, modLanguageAdapter = "net.shadowfacts.forgelin.KotlinAdapter")
 @Mod.EventBusSubscriber
@@ -27,6 +29,8 @@ object SparksTools {
     @Mod.Instance(MOD_ID)
     lateinit var instance: SparksTools
 
+    lateinit var customToolsFile: File
+
     val tab = object : CreativeTabs(MOD_ID) {
         override fun createIcon(): ItemStack = ItemStack(Items.DIAMOND_PICKAXE)
     }
@@ -34,11 +38,13 @@ object SparksTools {
     @EventHandler
     fun preInit(event: FMLPreInitializationEvent) {
         logger = event.modLog
+        val configDir = File(event.modConfigurationDirectory, MOD_ID)
+        customToolsFile = File(configDir, "custom_tools.json")
     }
 
     @SubscribeEvent
     fun regItems(event: RegistryEvent.Register<Item>) {
-
+        SHItems.init()
     }
 
     @SubscribeEvent
