@@ -20,18 +20,22 @@ class SHToolItem(name: String, private val material: SHToolMaterial) : Item() {
         val positions = ToolUtils.getBreakArea(stack, pos, sideHit, player)
         val start = positions.first
         val end = positions.second
-        for (x in start.x..end.x) {
-            for (y in start.y..end.y) {
-                for (z in start.z..end.z) {
-                    val posToBreak = BlockPos(x, y, z)
-                    if (posToBreak == pos && !breakInputPos)
-                        continue
-                    if (!super.onBlockStartBreak(stack, pos, player))
-                        ToolUtils.breakBlock(stack, player.world, player, posToBreak, pos)
-                }
-            }
-        }
+	    (start.x..end.x).forEach { x ->
+		    (start.y..end.y).forEach { y ->
+			    (start.z..end.z).forEach loop@{ z ->
+				    val posToBreak = BlockPos(x, y, z)
+				    if (posToBreak == pos && !breakInputPos)
+					    return@loop
+				    if (!super.onBlockStartBreak(stack, pos, player))
+					    ToolUtils.breakBlock(stack, player.world, player, posToBreak, pos)
+			    }
+		    }
+	    }
     }
+
+	fun isEffective(stack: ItemStack, state: IBlockState): Boolean =
+		getToolClasses(stack).any { state.block.isToolEffective(it, state) } ||
+			material.type.effectiveMaterials.contains(state.material)
 
     override fun onBlockStartBreak(stack: ItemStack, pos: BlockPos, player: EntityPlayer): Boolean {
         @Suppress("UNNECESSARY_SAFE_CALL")
@@ -47,10 +51,6 @@ class SHToolItem(name: String, private val material: SHToolMaterial) : Item() {
 
     override fun getDestroySpeed(stack: ItemStack, state: IBlockState): Float =
         if (isEffective(stack, state)) material.efficiency else 1F
-
-    private fun isEffective(stack: ItemStack, state: IBlockState): Boolean =
-        getToolClasses(stack).any { state.block.isToolEffective(it, state) } ||
-            material.type.effectiveMaterials.contains(state.material)
 
     override fun getHarvestLevel(stack: ItemStack, toolClass: String, player: EntityPlayer?, blockState: IBlockState?): Int =
         material.harvestLevel

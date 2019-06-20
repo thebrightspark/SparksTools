@@ -1,10 +1,18 @@
 package brightspark.sparkstools
 
+import brightspark.sparkstools.item.SHToolItem
+import net.minecraft.client.Minecraft
 import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.entity.player.EntityPlayerMP
 import net.minecraft.item.ItemStack
+import net.minecraft.network.play.client.CPacketPlayerDigging
+import net.minecraft.network.play.server.SPacketBlockChange
 import net.minecraft.util.EnumFacing
+import net.minecraft.util.EnumHand
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
+import net.minecraftforge.common.ForgeHooks
+import net.minecraftforge.event.ForgeEventFactory
 
 object ToolUtils {
 	/**
@@ -45,6 +53,54 @@ object ToolUtils {
 	 * Tries to break the block at [pos] using the [stack]
 	 */
 	fun breakBlock(stack: ItemStack, world: World, player: EntityPlayer, pos: BlockPos, refPos: BlockPos) {
-		// TODO: Block breaking
+		val state = world.getBlockState(pos)
+		val block = state.block
+		if (world.isAirBlock(pos)
+			|| stack.item !is SHToolItem
+			|| !(stack.item as SHToolItem).isEffective(stack, state)
+			|| !ForgeHooks.canHarvestBlock(block, player, world, pos))
+			return
+
+		// If block strength is too much stronger than the reference block, then don't break it
+		val strength = ForgeHooks.blockStrength(state, player, world, pos)
+		val refState = world.getBlockState(refPos)
+		val refStrength = ForgeHooks.blockStrength(refState, player, world, refPos)
+		if (refStrength / strength > 10F)
+			return
+
+		if (player.capabilities.isCreativeMode) {
+			block.onBlockHarvested(world, pos, state, player)
+			if (block.removedByPlayer(state, world, pos, player, false))
+				block.onPlayerDestroy(world, pos, state)
+			if (!world.isRemote && player is EntityPlayerMP)
+				player.connection.sendPacket(SPacketBlockChange(world, pos))
+			return
+		}
+
+		stack.onBlockDestroyed(world, state, pos, player)
+
+		if (!world.isRemote && player is EntityPlayerMP) {
+			val xp = ForgeHooks.onBlockBreakEvent(world, player.interactionManager.gameType, player, pos)
+			if (xp == -1)
+				return
+			val te = world.getTileEntity(pos)
+			if (block.removedByPlayer(state, world, pos, player, true)) {
+				block.onPlayerDestroy(world, pos, state)
+				block.harvestBlock(world, player, pos, state, te, stack)
+				block.dropXpOnBlockBreak(world, pos, xp)
+			}
+			player.connection.sendPacket(SPacketBlockChange(world, pos))
+		} else {
+			if (block.removedByPlayer(state, world, pos, player, true))
+				block.onPlayerDestroy(world, pos, state)
+			stack.onBlockDestroyed(world, state, pos, player)
+
+			if (stack.count == 0 && player.heldItemMainhand == stack) {
+				ForgeEventFactory.onPlayerDestroyItem(player, stack, EnumHand.MAIN_HAND)
+				player.setHeldItem(EnumHand.MAIN_HAND, ItemStack.EMPTY)
+			}
+			val mc = Minecraft.getMinecraft()
+			mc.connection!!.sendPacket(CPacketPlayerDigging(CPacketPlayerDigging.Action.STOP_DESTROY_BLOCK, pos, mc.objectMouseOver.sideHit))
+		}
 	}
 }
