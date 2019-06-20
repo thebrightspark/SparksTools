@@ -1,14 +1,13 @@
 package brightspark.sparkstools.item
 
 import brightspark.sparkstools.SparksTools
+import brightspark.sparkstools.ToolUtils
 import net.minecraft.block.state.IBlockState
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
 import net.minecraft.util.EnumFacing
-import net.minecraft.util.EnumFacing.*
 import net.minecraft.util.math.BlockPos
-import net.minecraft.world.World
 
 class SHToolItem(name: String, private val material: SHToolMaterial) : Item() {
     init {
@@ -17,61 +16,26 @@ class SHToolItem(name: String, private val material: SHToolMaterial) : Item() {
         creativeTab = SparksTools.tab
     }
 
-    /**
-     * Gets the start and end [BlockPos] for the area to break
-     */
-    private fun getBreakArea(stack: ItemStack, pos: BlockPos, sideHit: EnumFacing, player: EntityPlayer): Pair<BlockPos, BlockPos> {
-        //val item = stack.item as SHToolItem
-        val mineSize = 1 // TEMP
-        val start = BlockPos.MutableBlockPos(pos)
-        val end = BlockPos.MutableBlockPos(pos)
-
-        // Offset area upwards if player is standing on ground and mining horizontally
-        if (!player.capabilities.isFlying && sideHit.axis.isHorizontal && mineSize > 1) {
-            start.move(UP, mineSize - 1)
-            end.move(UP, mineSize - 1)
-        }
-
-        // Move start and end positions to area corners
-        when (sideHit) {
-            NORTH, SOUTH -> {
-                start.move(DOWN, mineSize).move(WEST, mineSize)
-                end.move(UP, mineSize).move(EAST, mineSize)
-            }
-            WEST, EAST -> {
-                start.move(DOWN, mineSize).move(NORTH, mineSize)
-                end.move(UP, mineSize).move(SOUTH, mineSize)
-            }
-            UP, DOWN -> {
-                start.move(WEST, mineSize).move(NORTH, mineSize)
-                end.move(EAST, mineSize).move(SOUTH, mineSize)
-            }
-        }
-
-        return start.toImmutable() to end.toImmutable()
-    }
-
-    private fun breakBlock(stack: ItemStack, world: World, player: EntityPlayer, pos: BlockPos, refPos: BlockPos) {
-        // TODO: Block breaking
-    }
-
-    override fun onBlockStartBreak(stack: ItemStack, pos: BlockPos, player: EntityPlayer): Boolean {
-        val ray = rayTrace(player.world, player, false) ?: return super.onBlockStartBreak(stack, pos, player)
-        val positions = getBreakArea(stack, pos, ray.sideHit, player)
+    fun breakBlocks(stack: ItemStack, pos: BlockPos, sideHit: EnumFacing, player: EntityPlayer, breakInputPos: Boolean = false) {
+        val positions = ToolUtils.getBreakArea(stack, pos, sideHit, player)
         val start = positions.first
         val end = positions.second
         for (x in start.x..end.x) {
             for (y in start.y..end.y) {
                 for (z in start.z..end.z) {
                     val posToBreak = BlockPos(x, y, z)
-                    // Don't need to break the block that the player already mined
-                    if (posToBreak == pos)
+                    if (posToBreak == pos && !breakInputPos)
                         continue
                     if (!super.onBlockStartBreak(stack, pos, player))
-                        breakBlock(stack, player.world, player, posToBreak, pos)
+                        ToolUtils.breakBlock(stack, player.world, player, posToBreak, pos)
                 }
             }
         }
+    }
+
+    override fun onBlockStartBreak(stack: ItemStack, pos: BlockPos, player: EntityPlayer): Boolean {
+        @Suppress("UNNECESSARY_SAFE_CALL")
+        rayTrace(player.world, player, false)?.let { breakBlocks(stack, pos, it.sideHit, player) }
         return super.onBlockStartBreak(stack, pos, player)
     }
 
