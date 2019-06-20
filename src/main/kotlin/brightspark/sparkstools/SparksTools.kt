@@ -44,7 +44,7 @@ object SparksTools {
 
     @SubscribeEvent
     fun regItems(event: RegistryEvent.Register<Item>) {
-        SHItems.init()
+        SHItems.init(event.registry)
     }
 
     @SubscribeEvent

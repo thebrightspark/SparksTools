@@ -7,33 +7,39 @@ import net.minecraft.item.ItemStack
 import net.minecraft.util.NonNullList
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.oredict.OreDictionary
-import java.lang.RuntimeException
 
 class CustomTool(
 	type: String,
 	name: String?,
 	val material: String,
-	textureColours: List<String>?
+	textureColours: List<String>?,
+	val harvestLevel: Int,
+	val durability: Int,
+	val efficiency: Float
 ) {
 	/**
 	 * The type of this tool
 	 */
 	@Suppress("USELESS_ELVIS")
+	@delegate:Transient
 	val type by lazy { ToolType.valueOf(type.toUpperCase()) ?: throw RuntimeException("The tool type '$type' does not exist!") }
 
 	/**
 	 * The display name for the item
 	 */
+	@delegate:Transient
 	val name by lazy { name ?: "${getMaterialName()} ${this.type.getFormattedName()}" }
 
 	/**
 	 * The [name] converted into a [ResourceLocation] to be used as the item registry name
 	 */
+	@delegate:Transient
 	val registryName by lazy { ResourceLocation(SparksTools.MOD_ID, this.name.toLowerCase().replace("\\s", "_")) }
 
 	/**
 	 * The colours to use when colouring the texture layers
 	 */
+	@delegate:Transient
 	val textureColours by lazy {
 		if (textureColours == null) return@lazy null
 		return@lazy textureColours.map {
@@ -43,13 +49,13 @@ class CustomTool(
 			// Decimal colour
 			if (colour == null) colour = it.toIntOrNull()
 			return@map colour
-		}.filter { it != null }.toList()
+		}.filterNotNull().toList()
 	}
 
 	/**
 	 * If [material] is an item registry name, then tries to get an [ItemStack] of the [Item], otherwise returns null
 	 */
-	fun getMaterialStack(): ItemStack? = Item.getByNameOrId(material)?.let { ItemStack(it) }
+	fun getMaterialStack(): NonNullList<ItemStack>? = Item.getByNameOrId(material)?.let { NonNullList.from(ItemStack.EMPTY, ItemStack(it)) }
 
 	/**
 	 * If [material] is an ore dictionary name, then tries to get a [NonNullList] of [ItemStack]s registered to it
@@ -65,7 +71,7 @@ class CustomTool(
 	 * Gets the name of the material [ItemStack] to be prepended to the tool's type for item name generation
 	 */
 	fun getMaterialName(): String {
-		return getMaterialStack()?.let { getNameFromStack(it) } ?:
+		return getMaterialStack()?.let { getNameFromStack(it[0]) } ?:
 			getMaterialOres().let { if (it.isNotEmpty()) getNameFromStack(it[0]) else "<null>" }
 	}
 

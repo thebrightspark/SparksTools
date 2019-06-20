@@ -9,10 +9,10 @@ import net.minecraft.item.ItemStack
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.math.BlockPos
 
-class SHToolItem(name: String, private val material: SHToolMaterial) : Item() {
+class SHToolItem(private val tool: CustomTool) : Item() {
     init {
-        setRegistryName(name)
-        translationKey = name
+	    registryName = tool.registryName
+        translationKey = tool.registryName.path
         creativeTab = SparksTools.tab
     }
 
@@ -35,7 +35,7 @@ class SHToolItem(name: String, private val material: SHToolMaterial) : Item() {
 
 	fun isEffective(stack: ItemStack, state: IBlockState): Boolean =
 		getToolClasses(stack).any { state.block.isToolEffective(it, state) } ||
-			material.type.effectiveMaterials.contains(state.material)
+			tool.type.effectiveMaterials.contains(state.material)
 
     override fun onBlockStartBreak(stack: ItemStack, pos: BlockPos, player: EntityPlayer): Boolean {
         @Suppress("UNNECESSARY_SAFE_CALL")
@@ -50,10 +50,10 @@ class SHToolItem(name: String, private val material: SHToolMaterial) : Item() {
     }
 
     override fun getDestroySpeed(stack: ItemStack, state: IBlockState): Float =
-        if (isEffective(stack, state)) material.efficiency else 1F
+        if (isEffective(stack, state)) tool.efficiency else 1F
 
     override fun getHarvestLevel(stack: ItemStack, toolClass: String, player: EntityPlayer?, blockState: IBlockState?): Int =
-        material.harvestLevel
+	    tool.harvestLevel
 
-    override fun getToolClasses(stack: ItemStack): Set<String> = material.type.toolTypes
+    override fun getToolClasses(stack: ItemStack): Set<String> = tool.type.toolTypes
 }
