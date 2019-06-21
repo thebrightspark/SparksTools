@@ -1,8 +1,7 @@
 package brightspark.sparkstools.init
 
 import brightspark.sparkstools.SparksTools
-import brightspark.sparkstools.item.CustomTool
-import brightspark.sparkstools.item.SHToolItem
+import brightspark.sparkstools.item.*
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.google.gson.stream.JsonReader
@@ -15,6 +14,12 @@ object SHItems {
 		Gson().fromJson<List<CustomTool>>(
 			JsonReader(FileReader(SparksTools.customToolsFile)),
 			object : TypeToken<List<CustomTool>>() {}.type
-		).forEach { registry.register(SHToolItem(it)) }
+		).forEach {
+			registry.register(when (it.type) {
+				ToolType.HAMMER -> ItemHammer(it)
+				ToolType.EXCAVATOR -> ItemExcavator(it)
+				ToolType.LUMBER_AXE -> ItemLumberAxe(it)
+			})
+		}
 	}
 }

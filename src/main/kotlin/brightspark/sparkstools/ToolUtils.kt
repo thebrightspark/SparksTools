@@ -1,6 +1,7 @@
 package brightspark.sparkstools
 
 import brightspark.sparkstools.item.SHToolItem
+import net.minecraft.block.state.IBlockState
 import net.minecraft.client.Minecraft
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.entity.player.EntityPlayerMP
@@ -18,7 +19,7 @@ object ToolUtils {
 	/**
 	 * Gets the start and end [BlockPos] for the area to break
 	 */
-	fun getBreakArea(stack: ItemStack, pos: BlockPos, sideHit: EnumFacing, player: EntityPlayer): Pair<BlockPos, BlockPos> {
+	fun getSquareBreakArea(stack: ItemStack, pos: BlockPos, sideHit: EnumFacing, player: EntityPlayer): Iterable<BlockPos> {
 		//val item = stack.item as SHToolItem
 		val mineSize = 1 // TEMP
 		val start = BlockPos.MutableBlockPos(pos)
@@ -46,7 +47,32 @@ object ToolUtils {
 			}
 		}
 
-		return start.toImmutable() to end.toImmutable()
+		return BlockPos.getAllInBox(start, end)
+	}
+
+	/**
+	 * Gets all similar blocks connected to the input [pos]
+	 */
+	fun getConnectedBlocks(pos: BlockPos, world: World): Set<BlockPos> {
+		val collected = HashSet<BlockPos>()
+		collected += pos
+		getConnectedBlocks(pos, world.getBlockState(pos), world, collected)
+		return collected
+	}
+
+	/**
+	 * Recursively collects all blocks connected horizontally, vertically or diagonally from the input
+	 */
+	private fun getConnectedBlocks(pos: BlockPos, refState: IBlockState, world: World, collected: MutableSet<BlockPos>) {
+		val refBlock = refState.block
+		val refProps = refState.propertyKeys
+		BlockPos.getAllInBox(pos.add(-1, -1, -1), pos.add(1, 1, 1)).forEach {
+			if (!collected.contains(it)) {
+				val state = world.getBlockState(it)
+				if (state.block == refBlock && state.propertyKeys == refProps && collected.add(it))
+					getConnectedBlocks(it, refState, world, collected)
+			}
+		}
 	}
 
 	/**

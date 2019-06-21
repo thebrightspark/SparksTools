@@ -9,28 +9,19 @@ import net.minecraft.item.ItemStack
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.math.BlockPos
 
-class SHToolItem(private val tool: CustomTool) : Item() {
+abstract class SHToolItem(private val tool: CustomTool) : Item() {
     init {
 	    registryName = tool.registryName
         translationKey = tool.registryName.path
         creativeTab = SparksTools.tab
     }
 
-    fun breakBlocks(stack: ItemStack, pos: BlockPos, sideHit: EnumFacing, player: EntityPlayer, breakInputPos: Boolean = false) {
-        val positions = ToolUtils.getBreakArea(stack, pos, sideHit, player)
-        val start = positions.first
-        val end = positions.second
-	    (start.x..end.x).forEach { x ->
-		    (start.y..end.y).forEach { y ->
-			    (start.z..end.z).forEach loop@{ z ->
-				    val posToBreak = BlockPos(x, y, z)
-				    if (posToBreak == pos && !breakInputPos)
-					    return@loop
-				    if (!super.onBlockStartBreak(stack, pos, player))
-					    ToolUtils.breakBlock(stack, player.world, player, posToBreak, pos)
-			    }
-		    }
-	    }
+	abstract fun getBlocksToBreak(stack: ItemStack, pos: BlockPos, side: EnumFacing, player: EntityPlayer): Iterable<BlockPos>
+
+    open fun breakBlocks(stack: ItemStack, pos: BlockPos, sideHit: EnumFacing, player: EntityPlayer, breakInputPos: Boolean = false) {
+	    getBlocksToBreak(stack, pos, sideHit, player)
+		    .filter { (breakInputPos || it != pos) && !super.onBlockStartBreak(stack, it, player) }
+		    .forEach { ToolUtils.breakBlock(stack, player.world, player, it, pos) }
     }
 
 	fun isEffective(stack: ItemStack, state: IBlockState): Boolean =
