@@ -1,7 +1,6 @@
 package brightspark.sparkstools
 
 import brightspark.sparkstools.init.SHItems
-import net.minecraft.block.Block
 import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.init.Items
 import net.minecraft.item.Item
@@ -39,22 +38,16 @@ object SparksTools {
     fun preInit(event: FMLPreInitializationEvent) {
         logger = event.modLog
         val configDir = File(event.modConfigurationDirectory, MOD_ID)
+        configDir.mkdirs()
         customToolsFile = File(configDir, "custom_tools.json")
     }
 
     @SubscribeEvent
-    fun regItems(event: RegistryEvent.Register<Item>) {
-        SHItems.init(event.registry)
-    }
-
-    @SubscribeEvent
-    fun regBlocks(event: RegistryEvent.Register<Block>) {
-
-    }
+    @JvmStatic
+    fun regItems(event: RegistryEvent.Register<Item>) = SHItems.init(event.registry)
 
     @SideOnly(Side.CLIENT)
     @SubscribeEvent
-    fun regModels(event: ModelRegistryEvent) {
-
-    }
+    @JvmStatic
+    fun regModels(event: ModelRegistryEvent) = SHItems.regModels()
 }

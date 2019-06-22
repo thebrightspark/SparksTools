@@ -9,7 +9,7 @@ import net.minecraft.item.ItemStack
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.math.BlockPos
 
-abstract class SHToolItem(private val tool: CustomTool) : Item() {
+abstract class SHToolItem(val tool: CustomTool) : Item() {
     init {
 	    registryName = tool.registryName
         translationKey = tool.registryName.path

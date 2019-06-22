@@ -2,6 +2,7 @@ package brightspark.sparkstools.item
 
 import brightspark.sparkstools.SparksTools
 import com.google.common.base.MoreObjects
+import com.google.gson.annotations.SerializedName
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
 import net.minecraft.util.NonNullList
@@ -9,10 +10,13 @@ import net.minecraft.util.ResourceLocation
 import net.minecraftforge.oredict.OreDictionary
 
 class CustomTool(
-	type: String,
-	name: String?,
+	@SerializedName("type")
+	private val typeIn: String,
+	@SerializedName("name")
+	private val nameIn: String?,
 	val material: String,
-	textureColours: List<String>?,
+	@SerializedName("textureColours")
+	private val textureColoursIn: List<String>?,
 	val harvestLevel: Int,
 	val durability: Int,
 	val efficiency: Float
@@ -22,13 +26,15 @@ class CustomTool(
 	 */
 	@Suppress("USELESS_ELVIS")
 	@delegate:Transient
-	val type by lazy { ToolType.valueOf(type.toUpperCase()) ?: throw RuntimeException("The tool type '$type' does not exist!") }
+	val type by lazy {
+		ToolType.valueOf(typeIn.toUpperCase())
+			?: throw RuntimeException("The tool type '$typeIn' does not exist!") }
 
 	/**
 	 * The display name for the item
 	 */
 	@delegate:Transient
-	val name by lazy { name ?: "${getMaterialName()} ${this.type.getFormattedName()}" }
+	val name by lazy { nameIn ?: "${getMaterialName()} ${this.type.getFormattedName()}" }
 
 	/**
 	 * The [name] converted into a [ResourceLocation] to be used as the item registry name
@@ -41,8 +47,8 @@ class CustomTool(
 	 */
 	@delegate:Transient
 	val textureColours by lazy {
-		if (textureColours == null) return@lazy null
-		return@lazy textureColours.map {
+		if (textureColoursIn == null) return@lazy null
+		return@lazy textureColoursIn.map {
 			var colour: Int? = null
 			// Hexadecimal colour
 			if (it.startsWith("0x")) colour = it.toIntOrNull(16)
