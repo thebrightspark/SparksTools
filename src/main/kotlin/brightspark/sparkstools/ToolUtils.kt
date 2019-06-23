@@ -20,7 +20,7 @@ object ToolUtils {
 	 * Gets the start and end [BlockPos] for the area to break
 	 */
 	fun getSquareBreakArea(stack: ItemStack, pos: BlockPos, sideHit: EnumFacing, player: EntityPlayer): Iterable<BlockPos> {
-		//val item = stack.item as SHToolItem
+		val item = stack.item as SHToolItem
 		val mineSize = 1 // TEMP
 		val start = BlockPos.MutableBlockPos(pos)
 		val end = BlockPos.MutableBlockPos(pos)
@@ -47,7 +47,8 @@ object ToolUtils {
 			}
 		}
 
-		return BlockPos.getAllInBox(start, end)
+		val world = player.world
+		return BlockPos.getAllInBox(start, end).filter { item.isEffective(stack, world.getBlockState(it)) }
 	}
 
 	/**
@@ -64,13 +65,13 @@ object ToolUtils {
 	 * Recursively collects all blocks connected horizontally, vertically or diagonally from the input
 	 */
 	private fun getConnectedBlocks(pos: BlockPos, refState: IBlockState, world: World, collected: MutableSet<BlockPos>) {
-		val refBlock = refState.block
-		val refProps = refState.propertyKeys
 		BlockPos.getAllInBox(pos.add(-1, -1, -1), pos.add(1, 1, 1)).forEach {
 			if (!collected.contains(it)) {
 				val state = world.getBlockState(it)
-				if (state.block == refBlock && state.propertyKeys == refProps && collected.add(it))
+				if (state == refState) {
+					collected += it
 					getConnectedBlocks(it, refState, world, collected)
+				}
 			}
 		}
 	}

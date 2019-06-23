@@ -7,6 +7,6 @@ import net.minecraft.util.EnumFacing
 import net.minecraft.util.math.BlockPos
 
 class ItemLumberAxe(tool: CustomTool) : SHToolItem(tool) {
-	override fun getBlocksToBreak(stack: ItemStack, pos: BlockPos, side: EnumFacing, player: EntityPlayer): Iterable<BlockPos> =
+	override fun getBlocksToBreakIfEffective(stack: ItemStack, pos: BlockPos, side: EnumFacing, player: EntityPlayer): Iterable<BlockPos> =
 		ToolUtils.getConnectedBlocks(pos, player.world)
 }

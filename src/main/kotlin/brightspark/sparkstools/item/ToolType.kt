@@ -8,5 +8,5 @@ enum class ToolType(val toolTypes: Set<String>, val effectiveMaterials: Set<Mate
     EXCAVATOR(setOf("shovel", "excavator"), setOf(GRASS, GROUND, SAND, SNOW, CRAFTED_SNOW, CLAY)),
     LUMBER_AXE(setOf("axe", "lumber_axe"), setOf(WOOD, CACTUS, GOURD));
 
-    fun getFormattedName(): String = name.toLowerCase().capitalize()
+    val formattedName = name.toLowerCase().split('_').joinToString(" ") { it.capitalize() }
 }

@@ -16,7 +16,13 @@ abstract class SHToolItem(val tool: CustomTool) : Item() {
         creativeTab = SparksTools.tab
     }
 
-	abstract fun getBlocksToBreak(stack: ItemStack, pos: BlockPos, side: EnumFacing, player: EntityPlayer): Iterable<BlockPos>
+	internal abstract fun getBlocksToBreakIfEffective(stack: ItemStack, pos: BlockPos, side: EnumFacing, player: EntityPlayer): Iterable<BlockPos>
+
+	fun getBlocksToBreak(stack: ItemStack, pos: BlockPos, side: EnumFacing, player: EntityPlayer): Iterable<BlockPos> =
+		if (isEffective(stack, player.world.getBlockState(pos)))
+			getBlocksToBreakIfEffective(stack, pos, side, player)
+		else
+			emptySet()
 
     open fun breakBlocks(stack: ItemStack, pos: BlockPos, sideHit: EnumFacing, player: EntityPlayer, breakInputPos: Boolean = false) {
 	    getBlocksToBreak(stack, pos, sideHit, player)
