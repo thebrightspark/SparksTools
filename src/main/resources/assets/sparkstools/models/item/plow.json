@@ -1,0 +1,7 @@
+{
+    "parent": "item/handheld",
+    "textures": {
+        "layer0": "sparkstools:items/plow_handle",
+        "layer1": "sparkstools:items/plow_head"
+    }
+}

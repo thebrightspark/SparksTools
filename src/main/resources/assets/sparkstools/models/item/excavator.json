@@ -1,6 +1,7 @@
 {
     "parent": "item/handheld",
     "textures": {
-        "layer0": "items/stick"
+        "layer0": "sparkstools:items/excavator_handle",
+        "layer1": "sparkstools:items/excavator_head"
     }
 }
