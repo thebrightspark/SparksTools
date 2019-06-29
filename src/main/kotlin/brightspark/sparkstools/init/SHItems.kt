@@ -77,8 +77,7 @@ object SHItems {
 		// A compiler error appears here in IntelliJ IDEA, but it builds fine
 		event.itemColors.registerItemColorHandler(
 			{ stack: ItemStack, tintIndex: Int ->
-				val colours = (stack.item as SHToolItem).tool.textureColours
-				if (tintIndex > 0 && tintIndex < colours.size) colours[tintIndex] else -1
+				if (tintIndex == 1) (stack.item as SHToolItem).tool.textureColour ?: -1 else -1
 			},
 			tools.toTypedArray()
 		)
@@ -87,15 +86,15 @@ object SHItems {
 	@SideOnly(Side.CLIENT)
 	fun calcMissingMaterialColours() {
 		SparksTools.logger.info("Starting to calculate tool colours for tools missing colours")
-		tools.filter { it.tool.textureColours.isEmpty() }.forEach { calcMaterialColour(it.tool) }
+		tools.filter { it.tool.textureColour == null }.forEach { calcMaterialColour(it.tool) }
 		SparksTools.logger.info("Finished calculating tool colours")
-		val toolsMissingColours = tools.filter { it.tool.textureColours.isEmpty() }.joinToString("\n", transform = { it.tool.toString() })
+		val toolsMissingColours = tools.filter { it.tool.textureColour == null }.joinToString("\n", transform = { it.tool.toString() })
 		if (toolsMissingColours.isNotEmpty())
 			SparksTools.logger.warn("The following tools are missing colours! This is most likely due to missing material textures - find warnings and errors above regarding them for more details. They will appear uncoloured in-game:\n$toolsMissingColours")
 	}
 
 	/**
-	 * Calculates the material colour for the [tool] and sets it to the [CustomTool.textureColours]
+	 * Calculates the material colour for the [tool] and sets it to the [CustomTool.textureColour]
 	 */
 	@SideOnly(Side.CLIENT)
 	private fun calcMaterialColour(tool: CustomTool) {
@@ -113,8 +112,8 @@ object SHItems {
 		}
 		val colour = Color(total.left / num, total.middle / num, total.right / num)
 		val rgb = colour.rgb
+		tool.textureColour = rgb
 		SparksTools.logger.info("Calculated the colour $colour ($rgb) for the tool $tool")
-		tool.textureColours = listOf(-1, rgb)
 	}
 
 	/**
@@ -150,7 +149,6 @@ object SHItems {
 		}
 		val mean = sum / size
 		val stdDev = sqrt((sumOfSquares - sum * sum / size) / (size - 1))
-		SparksTools.logger.info("$stack -> Mean: $mean, StdDev: $stdDev")
 
 		// Filter using standard deviation and calculate mean
 		val filteredColours = rgbData.filterIndexed { i, _ -> abs(brightnesses[i] - mean) < stdDev }

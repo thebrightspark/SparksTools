@@ -50,17 +50,18 @@ class CustomTool(private val data: CustomToolData) {
 	val registryName = ResourceLocation(SparksTools.MOD_ID, name.toLowerCase().replace(Regex("\\s"), "_"))
 
 	/**
-	 * The colours to use when colouring the texture layers
+	 * The colour to use when colouring the texture
 	 */
-	var textureColours = if (data.textureColours == null) emptyList() else
-		data.textureColours.map {
-			var colour: Int? = null
-			// Hexadecimal colour
-			if (it.startsWith("0x")) colour = it.toIntOrNull(16)
-			// Decimal colour
-			if (colour == null) colour = it.toIntOrNull()
-			return@map colour
-		}.filterNotNull().toList()
+	var textureColour = data.textureColour?.let {
+		var colour: Int? = null
+		// Hexadecimal colour
+		if (it.startsWith("0x"))
+			colour = it.substringAfter("0x").toIntOrNull(16)
+		// Decimal colour
+		if (colour == null)
+			colour = it.toIntOrNull()
+		return@let colour
+	}
 
 	val harvestLevel: Int
 		get() = data.harvestLevel ?: 0
@@ -86,7 +87,7 @@ class CustomTool(private val data: CustomToolData) {
 			.add("name", name)
 			.add("registryName", registryName)
 			.add("material", data.material)
-			.add("textureColours", textureColours)
+			.add("textureColour", textureColour)
 			.toString()
 	}
 }
