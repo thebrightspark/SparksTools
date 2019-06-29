@@ -133,83 +133,49 @@ object SHItems {
 			return null
 		}
 		val pixels = texture.getFrameTextureData(0)[0]
-		val rgbData = ArrayList<Triple<Int, Int, Int>>()
-		val hsbData = ArrayList<Triple<Float, Float, Float>>()
-		val hsbMean = MutableTriple(0F, 0F, 0F)
-		var weightTotal = 0F
-		pixels.forEach {
-			if ((it shr 24) and 0xFF < 128)
-				return@forEach
-			val colour = Color(it)
-			rgbData += Triple(colour.red, colour.green, colour.blue)
-			val colourHsb = Color.RGBtoHSB(colour.red, colour.green, colour.blue, null)
-			hsbData += Triple(colourHsb[0], colourHsb[1], colourHsb[2])
-			val weight = calcWeight(colourHsb[2])
-			hsbMean.left += colourHsb[0] * weight
-			hsbMean.middle += colourHsb[1] * weight
-			hsbMean.right += colourHsb[2] * weight
-			weightTotal += weight
-		}
-		if (hsbData.isEmpty()) {
+		val rgbData = pixels.filter { (it shr 24) and 0xFF > 127 }.map { Color(it) }.toList()
+		if (rgbData.isEmpty()) {
 			SparksTools.logger.warn("Using fallback colour algo - no suitably opaque pixels for $stack")
 			return getAverageColourBasic(pixels)
 		}
 
-		hsbMean.left /= weightTotal
-		hsbMean.middle /= weightTotal
-		hsbMean.right /= weightTotal
-		val hsbStdDev = weightedStdDev(hsbData, hsbMean, weightTotal)
-		val rgbBin = MutableTriple(0, 0, 0)
-		var total = 0
-		hsbData.forEachIndexed { i, hsb ->
-			if (!withinStdDev(hsb, hsbMean, hsbStdDev))
-				return@forEachIndexed
-			val rgb = rgbData[i]
-			rgbBin.left += rgb.first
-			rgbBin.middle += rgb.second
-			rgbBin.right += rgb.third
-			total++
+		// Calculate standard deviation of brightnesses
+		val brightnesses = rgbData.map { Color.RGBtoHSB(it.red, it.green, it.blue, null)[2] }.toList()
+		val size = brightnesses.size
+		var sum = 0.0
+		var sumOfSquares = 0.0
+		brightnesses.forEach {
+			sum += it
+			sumOfSquares += it
 		}
-		return if (total == 0) {
-			SparksTools.logger.warn("Using fallback colour algo - no pixels in 1 stddev for $stack")
-			getAverageColourBasic(pixels)
+		val mean = sum / size
+		val stdDev = sqrt((sumOfSquares - sum * sum / size) / (size - 1))
+		SparksTools.logger.info("$stack -> Mean: $mean, StdDev: $stdDev")
+
+		// Filter using standard deviation and calculate mean
+		val filteredColours = rgbData.filterIndexed { i, _ -> abs(brightnesses[i] - mean) < stdDev }
+			.map {
+				val c = it.brighter()
+				MutableTriple(c.red, c.green, c.blue)
+			}.toList()
+		if (filteredColours.isEmpty()) {
+			SparksTools.logger.warn("Using fallback colour algo - no pixels within standard deviation for $stack")
+			return getAverageColourBasic(pixels)
 		}
-		else {
-			rgbBin.left /= total
-			rgbBin.middle /= total
-			rgbBin.right /= total
-			rgbBin
+		val sizeFiltered = filteredColours.size
+		val colourMean = filteredColours.reduce { acc, colour ->
+			acc.left += colour.left
+			acc.middle += colour.middle
+			acc.right += colour.right
+			acc
 		}
+		colourMean.left /= sizeFiltered
+		colourMean.middle /= sizeFiltered
+		colourMean.right /= sizeFiltered
+		return colourMean
 	}
 
-	private fun calcWeight(b: Float): Float =
-		if (b > 0.8F) 1F else if (b > 0.5F) 0.5F else 0.1F
-
-	private fun weightedStdDev(hsb: ArrayList<Triple<Float, Float, Float>>, hsbMean: MutableTriple<Float, Float, Float>, weightTotal: Float): Triple<Double, Double, Double> {
-		val acc = MutableTriple(0F, 0F, 0F)
-		hsb.forEach {
-			acc.left += weightedStdDevAcc(it.first, hsbMean.left)
-			acc.middle += weightedStdDevAcc(it.second, hsbMean.middle)
-			acc.right += weightedStdDevAcc(it.third, hsbMean.right)
-		}
-		val hsbSize = hsb.size.toFloat()
-		return Triple(
-			sqrt((acc.left * hsbSize / ((hsbSize - 1) * weightTotal)).toDouble()),
-			sqrt((acc.middle * hsbSize / ((hsbSize - 1) * weightTotal)).toDouble()),
-			sqrt((acc.right * hsbSize / ((hsbSize - 1) * weightTotal)).toDouble())
-		)
-	}
-
-	private fun weightedStdDevAcc(hsbPart: Float, hsbMeanPart: Float): Float {
-		val diff = hsbPart - hsbMeanPart
-		return diff * diff * calcWeight(hsbPart)
-	}
-
-	private fun withinStdDev(hsb: Triple<Float, Float, Float>, hsbMean: MutableTriple<Float, Float, Float>, hsbStdDev: Triple<Double, Double, Double>): Boolean =
-		abs(hsb.first - hsbMean.left) <= hsbStdDev.first &&
-			abs(hsb.second - hsbMean.middle) <= hsbStdDev.second &&
-			abs(hsb.third - hsbMean.right) <= hsbStdDev.third
-
+	@SideOnly(Side.CLIENT)
 	private fun getAverageColourBasic(pixels: IntArray): MutableTriple<Int, Int, Int> {
 		val rgb = MutableTriple(0, 0, 0)
 		var num = 0
@@ -227,27 +193,4 @@ object SHItems {
 		rgb.right /= num
 		return rgb
 	}
-
-	// Old basic averaging
-	/*@SideOnly(Side.CLIENT)
-	private fun getAverageColour(stack: ItemStack): MutableTriple<Int, Int, Int> {
-		val model = Minecraft.getMinecraft().renderItem.getItemModelWithOverrides(stack, null, null)
-		val texture = model.particleTexture
-		val pixels = texture.getFrameTextureData(0)[0]
-		val rgb = MutableTriple(0, 0, 0)
-		var num = 0
-		pixels.forEach { pixel: Int ->
-			val colour = Color(pixel)
-			if (colour.alpha != 255 || (colour.red <= 10 && colour.green <= 10 && colour.blue <= 10))
-				return@forEach
-			rgb.left += colour.red
-			rgb.middle += colour.green
-			rgb.right += colour.blue
-			num++
-		}
-		rgb.left /= num
-		rgb.middle /= num
-		rgb.right /= num
-		return rgb
-	}*/
 }
