@@ -68,6 +68,8 @@ abstract class SHToolItem(val tool: CustomTool) : Item() {
 		return true
 	}
 
+	override fun getItemStackDisplayName(stack: ItemStack): String = tool.name
+
 	@SideOnly(Side.CLIENT)
 	override fun isFull3D(): Boolean = true
 
