@@ -9,10 +9,35 @@ import net.minecraft.util.ResourceLocation
 import net.minecraftforge.oredict.OreDictionary
 
 class CustomTool(private val data: CustomToolData) {
+
+	init {
+		@Suppress("SENSELESS_COMPARISON")
+		if (data.type == null)
+			throw RuntimeException("The following tool has no type! $data")
+		@Suppress("SENSELESS_COMPARISON")
+		if (data.material == null)
+			throw RuntimeException("The following tool has no material! $data")
+	}
+
 	/**
 	 * The type of this tool
 	 */
 	val type = ToolType.valueOf(data.type.replace(Regex("\\s"), "_").toUpperCase())
+
+	/**
+	 * A list of [ItemStack]s that can be used to create this tool
+	 */
+	val material: NonNullList<ItemStack> = data.material.let {
+
+		Item.getByNameOrId(it)?.let { NonNullList.from(ItemStack.EMPTY, ItemStack(it)) } ?:
+		OreDictionary.getOres(it)
+	}
+
+	/**
+	 * Gets the name of the material [ItemStack] to be prepended to the tool's type for item name generation
+	 */
+	private fun getMaterialName(): String =
+		if (material.isNotEmpty()) material[0].displayName.substringBeforeLast(' ') else "<null>"
 
 	/**
 	 * The display name for the item
@@ -37,37 +62,23 @@ class CustomTool(private val data: CustomToolData) {
 			return@map colour
 		}.filterNotNull().toList()
 
-	/**
-	 * If material is an item registry name, then tries to get an [ItemStack] of the [Item], otherwise returns null
-	 */
-	fun getMaterialStack(): NonNullList<ItemStack>? = Item.getByNameOrId(data.material)?.let { NonNullList.from(ItemStack.EMPTY, ItemStack(it)) }
-
-	/**
-	 * If material is an ore dictionary name, then tries to get a [NonNullList] of [ItemStack]s registered to it
-	 */
-	fun getMaterialOres(): NonNullList<ItemStack> = OreDictionary.getOres(data.material)
-
-	/**
-	 * Gets the display name from the [stack] and strips the last word from it
-	 */
-	private fun getNameFromStack(stack: ItemStack): String = stack.displayName.substringBeforeLast(' ')
-
-	/**
-	 * Gets the name of the material [ItemStack] to be prepended to the tool's type for item name generation
-	 */
-	fun getMaterialName(): String {
-		return getMaterialStack()?.let { getNameFromStack(it[0]) } ?:
-			getMaterialOres().let { if (it.isNotEmpty()) getNameFromStack(it[0]) else "<null>" }
-	}
-
 	val harvestLevel: Int
-		get() = data.harvestLevel
+		get() = data.harvestLevel ?: 0
 
 	val durability: Int
-		get() = data.durability
+		get() = data.durability ?: 1000
 
 	val efficiency: Float
-		get() = data.efficiency
+		get() = data.efficiency ?: 1F
+
+	val attackDamage: Float
+		get() = data.attackDamage ?: 1F
+
+	val attackSpeed: Float
+		get() = data.attackSpeed ?: 1F
+
+	val enchantability: Int
+		get() = data.enchantability ?: 0
 
 	override fun toString(): String {
 		return MoreObjects.toStringHelper(this)

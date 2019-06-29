@@ -2,7 +2,6 @@ package brightspark.sparkstools
 
 import brightspark.sparkstools.init.SHItems
 import net.minecraft.creativetab.CreativeTabs
-import net.minecraft.init.Items
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
 import net.minecraftforge.client.event.ColorHandlerEvent
@@ -33,7 +32,10 @@ object SparksTools {
     lateinit var customToolsFile: File
 
     val tab = object : CreativeTabs(MOD_ID) {
-        override fun createIcon(): ItemStack = ItemStack(Items.DIAMOND_PICKAXE)
+        // Unused
+        override fun createIcon(): ItemStack = ItemStack.EMPTY
+
+        override fun getIcon(): ItemStack = SHItems.getTabIcon()
     }
 
     @EventHandler

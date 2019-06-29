@@ -66,12 +66,9 @@ object ToolUtils {
 	 */
 	private fun getConnectedBlocks(pos: BlockPos, refState: IBlockState, world: World, collected: MutableSet<BlockPos>) {
 		BlockPos.getAllInBox(pos.add(-1, -1, -1), pos.add(1, 1, 1)).forEach {
-			if (!collected.contains(it)) {
-				val state = world.getBlockState(it)
-				if (state == refState) {
-					collected += it
-					getConnectedBlocks(it, refState, world, collected)
-				}
+			if (!collected.contains(it) && world.getBlockState(it) == refState) {
+				collected += it
+				getConnectedBlocks(it, refState, world, collected)
 			}
 		}
 	}

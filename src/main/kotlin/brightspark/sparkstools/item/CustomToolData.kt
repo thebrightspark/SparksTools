@@ -5,7 +5,10 @@ data class CustomToolData(
 	val name: String?,
 	val material: String,
 	val textureColours: List<String>?,
-	val harvestLevel: Int,
-	val durability: Int,
-	val efficiency: Float
+	val harvestLevel: Int?,
+	val durability: Int?,
+	val efficiency: Float?,
+	val attackDamage: Float?,
+	val attackSpeed: Float?,
+	val enchantability: Int?
 )
