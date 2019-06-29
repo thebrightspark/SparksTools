@@ -28,9 +28,10 @@ class CustomTool(private val data: CustomToolData) {
 	 * A list of [ItemStack]s that can be used to create this tool
 	 */
 	val material: NonNullList<ItemStack> = data.material.let {
-
-		Item.getByNameOrId(it)?.let { NonNullList.from(ItemStack.EMPTY, ItemStack(it)) } ?:
-		OreDictionary.getOres(it)
+		val stacks = Item.getByNameOrId(it)?.let { item -> NonNullList.from(ItemStack.EMPTY, ItemStack(item)) } ?: OreDictionary.getOres(it)
+		if (stacks.isEmpty())
+			throw RuntimeException("Couldn't find an item or ore dictionary for the material $it")
+		return@let stacks
 	}
 
 	/**
