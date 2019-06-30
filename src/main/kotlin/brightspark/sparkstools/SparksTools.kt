@@ -1,9 +1,12 @@
 package brightspark.sparkstools
 
 import brightspark.sparkstools.init.SHItems
+import brightspark.sparkstools.item.SHToolItem
 import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
+import net.minecraft.item.crafting.IRecipe
+import net.minecraft.util.NonNullList
 import net.minecraftforge.client.event.ColorHandlerEvent
 import net.minecraftforge.client.event.ModelRegistryEvent
 import net.minecraftforge.event.RegistryEvent
@@ -32,10 +35,26 @@ object SparksTools {
     lateinit var customToolsFile: File
 
     val tab = object : CreativeTabs(MOD_ID) {
+        private val sorter = Comparator<ItemStack> { o1, o2 ->
+            val item1 = o1.item
+            val item2 = o2.item
+            return@Comparator if (item1 is SHToolItem && item2 is SHToolItem)
+                item1.tool.material[0].item.registryName!!.compareTo(item2.tool.material[0].item.registryName!!)
+            else if (item1 !is SHToolItem || item2 !is SHToolItem)
+                if (item1 !is SHToolItem) -1 else 1
+            else
+                item1.registryName!!.compareTo(item2.registryName!!)
+        }
+
         // Unused
         override fun createIcon(): ItemStack = ItemStack.EMPTY
 
         override fun getIcon(): ItemStack = SHItems.getTabIcon()
+
+        override fun displayAllRelevantItems(stacks: NonNullList<ItemStack>) {
+            super.displayAllRelevantItems(stacks)
+            stacks.sortWith(sorter)
+        }
     }
 
     @EventHandler
