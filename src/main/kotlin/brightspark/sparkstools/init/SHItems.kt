@@ -145,7 +145,7 @@ object SHItems {
 		var sumOfSquares = 0.0
 		brightnesses.forEach {
 			sum += it
-			sumOfSquares += it
+			sumOfSquares += it * it
 		}
 		val mean = sum / size
 		val stdDev = sqrt((sumOfSquares - sum * sum / size) / (size - 1))
