@@ -1,6 +1,7 @@
 package brightspark.sparkstools
 
 import brightspark.sparkstools.item.SHToolItem
+import net.minecraft.block.Block
 import net.minecraft.block.state.IBlockState
 import net.minecraft.client.Minecraft
 import net.minecraft.entity.player.EntityPlayer
@@ -17,7 +18,7 @@ import net.minecraftforge.event.ForgeEventFactory
 
 object ToolUtils {
 	/**
-	 * Gets the start and end [BlockPos] for the area to break
+	 * Gets an [Iterable] of [BlockPos] for the area to break
 	 */
 	fun getSquareBreakArea(stack: ItemStack, pos: BlockPos, sideHit: EnumFacing, player: EntityPlayer): Iterable<BlockPos> {
 		val item = stack.item as SHToolItem
@@ -49,6 +50,21 @@ object ToolUtils {
 
 		val world = player.world
 		return BlockPos.getAllInBox(start, end).filter { item.isEffective(stack, world.getBlockState(it)) }
+	}
+
+	/**
+	 * Gets an [Iterable] of [BlockPos] that match the [blockTypes] filter around the same Y level as the [pos]
+	 */
+	fun getGroundBlocks(stack: ItemStack, pos: BlockPos, player: EntityPlayer, blockTypes: Array<Block>): Iterable<BlockPos> {
+		//val item = stack.item as SHToolItem
+		val mineSize = 1 // TEMP
+		val start = pos.add(-mineSize, 0, -mineSize)
+		val end = pos.add(mineSize, 0, mineSize)
+		val world = player.world
+		return BlockPos.getAllInBox(start, end).filter {
+			val block = world.getBlockState(it).block
+			blockTypes.contains(block) && player.canPlayerEdit(it, EnumFacing.UP, stack)
+		}
 	}
 
 	/**

@@ -25,7 +25,8 @@ import kotlin.math.abs
 import kotlin.math.sqrt
 
 object SHItems {
-	private val tools = ArrayList<SHToolItem>()
+	val toolItems = ArrayList<SHToolItem>()
+
 	private var lastTabIconSecond = 0L
 	private var lastTabIconStack = ItemStack.EMPTY
 
@@ -33,17 +34,16 @@ object SHItems {
 		val second = System.currentTimeMillis() / 1000
 		if (second != lastTabIconSecond) {
 			lastTabIconSecond = second
-			lastTabIconStack = ItemStack(tools[(second % tools.size).toInt()])
+			lastTabIconStack = ItemStack(toolItems[(second % toolItems.size).toInt()])
 		}
 		return lastTabIconStack
 	}
 
-	fun init(registry: IForgeRegistry<Item>) {
-		val customTools = Gson().fromJson<List<CustomToolData>>(
+	fun regItems(registry: IForgeRegistry<Item>) {
+		Gson().fromJson<List<CustomToolData>>(
 			JsonReader(FileReader(SparksTools.customToolsFile) as Reader?),
 			object : TypeToken<List<CustomToolData>>() {}.type
-		)
-		customTools.mapNotNull {
+		).mapNotNull {
 			try {
 				return@mapNotNull CustomTool(it)
 			} catch (e: Exception) {
@@ -55,16 +55,17 @@ object SHItems {
 				ToolType.HAMMER -> ItemHammer(it)
 				ToolType.EXCAVATOR -> ItemExcavator(it)
 				ToolType.LUMBER_AXE -> ItemLumberAxe(it)
+				ToolType.PLOW -> ItemPlow(it)
 			}
 			SparksTools.logger.info("Registering ${item.registryName} -> ${item.tool}")
-			tools += item
+			toolItems += item
 			registry.register(item)
 		}
 	}
 
 	@SideOnly(Side.CLIENT)
 	fun regModels() {
-		tools.forEach {
+		toolItems.forEach {
 			ModelLoader.setCustomModelResourceLocation(it, 0,
 				ModelResourceLocation("${it.registryName!!.namespace}:${it.tool.type.name.toLowerCase(Locale.ROOT)}", "inventory")
 			)
@@ -73,22 +74,21 @@ object SHItems {
 
 	@SideOnly(Side.CLIENT)
 	fun regColours(event: ColorHandlerEvent.Item) {
-		// Register item colour handler
 		// A compiler error appears here in IntelliJ IDEA, but it builds fine
 		event.itemColors.registerItemColorHandler(
 			{ stack: ItemStack, tintIndex: Int ->
 				if (tintIndex == 1) (stack.item as SHToolItem).tool.textureColour ?: -1 else -1
 			},
-			tools.toTypedArray()
+			toolItems.toTypedArray()
 		)
 	}
 
 	@SideOnly(Side.CLIENT)
 	fun calcMissingMaterialColours() {
 		SparksTools.logger.info("Starting to calculate tool colours for tools missing colours")
-		tools.filter { it.tool.textureColour == null }.forEach { calcMaterialColour(it.tool) }
+		toolItems.filter { it.tool.textureColour == null }.forEach { calcMaterialColour(it.tool) }
 		SparksTools.logger.info("Finished calculating tool colours")
-		val toolsMissingColours = tools.filter { it.tool.textureColour == null }.joinToString("\n", transform = { it.tool.toString() })
+		val toolsMissingColours = toolItems.filter { it.tool.textureColour == null }.joinToString("\n", transform = { it.tool.toString() })
 		if (toolsMissingColours.isNotEmpty())
 			SparksTools.logger.warn("The following tools are missing colours! This is most likely due to missing material textures - find warnings and errors above regarding them for more details. They will appear uncoloured in-game:\n$toolsMissingColours")
 	}

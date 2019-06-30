@@ -37,7 +37,7 @@ abstract class SHToolItem(val tool: CustomTool) : Item() {
 
     open fun breakBlocks(stack: ItemStack, pos: BlockPos, sideHit: EnumFacing, player: EntityPlayer, breakInputPos: Boolean = false) {
 	    getBlocksToBreak(stack, pos, sideHit, player)
-		    .filter { (breakInputPos || it != pos) && !super.onBlockStartBreak(stack, it, player) }
+		    .filter { (breakInputPos || it != pos) && player.canPlayerEdit(pos, sideHit, stack) && !super.onBlockStartBreak(stack, it, player) }
 		    .forEach { ToolUtils.breakBlock(stack, player.world, player, it, pos) }
     }
 

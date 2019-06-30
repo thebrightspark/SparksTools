@@ -1,7 +1,10 @@
 package brightspark.sparkstools
 
+import brightspark.sparkstools.init.SHBlocks
 import brightspark.sparkstools.init.SHItems
+import brightspark.sparkstools.init.SHRecipes
 import brightspark.sparkstools.item.SHToolItem
+import net.minecraft.block.Block
 import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
@@ -73,12 +76,27 @@ object SparksTools {
 
     @SubscribeEvent
     @JvmStatic
-    fun regItems(event: RegistryEvent.Register<Item>) = SHItems.init(event.registry)
+    fun regBlocks(event: RegistryEvent.Register<Block>) = SHBlocks.regBlocks(event.registry)
+
+    @SubscribeEvent
+    @JvmStatic
+    fun regItems(event: RegistryEvent.Register<Item>) {
+        val registry = event.registry
+        SHBlocks.regItemBlocks(registry)
+        SHItems.regItems(registry)
+    }
+
+    @SubscribeEvent
+    @JvmStatic
+    fun regRecipes(event: RegistryEvent.Register<IRecipe>) = SHRecipes.regRecipes(event.registry)
 
     @SideOnly(Side.CLIENT)
     @SubscribeEvent
     @JvmStatic
-    fun regModels(event: ModelRegistryEvent) = SHItems.regModels()
+    fun regModels(event: ModelRegistryEvent) {
+        SHItems.regModels()
+        SHBlocks.regModels()
+    }
 
     @SideOnly(Side.CLIENT)
     @SubscribeEvent
