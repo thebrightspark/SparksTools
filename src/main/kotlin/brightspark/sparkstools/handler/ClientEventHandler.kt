@@ -18,6 +18,7 @@ import net.minecraftforge.fml.relauncher.Side
 object ClientEventHandler {
 	private var lastStack = ItemStack.EMPTY
 	private var lastPos: BlockPos? = null
+	private var lastSide: EnumFacing? = null
 	private var positionsToRender: Iterable<BlockPos>? = null
 
 	@SubscribeEvent
@@ -36,9 +37,10 @@ object ClientEventHandler {
 			}
 		}
 
-		if (heldStack.item != lastStack.item || posLookingAt != lastPos) {
+		if (heldStack.item != lastStack.item || posLookingAt != lastPos || side != lastSide) {
 			lastStack = heldStack
 			lastPos = posLookingAt
+			lastSide = side
 			positionsToRender = if (heldStack.item is SHToolItem && posLookingAt != null && side != null)
 				(heldStack.item as SHToolItem).getBlocksToBreak(heldStack, posLookingAt!!, side!!, player)
 			else
