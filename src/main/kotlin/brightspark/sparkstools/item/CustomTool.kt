@@ -38,7 +38,16 @@ class CustomTool(private val data: CustomToolData) {
 	 * Gets the name of the material [ItemStack] to be prepended to the tool's type for item name generation
 	 */
 	private fun getMaterialName(): String =
-		if (material.isNotEmpty()) material[0].displayName.substringBeforeLast(' ') else "<null>"
+		if (material.isNotEmpty()) {
+			var name = material[0].displayName
+			if (name.startsWith("Block of "))
+				name = name.substringAfter("Block of ")
+			if (name.endsWith("Ingot"))
+				name = name.substringBefore("Ingot")
+			name.trim()
+		}
+		else
+			"<null>"
 
 	/**
 	 * The display name for the item
