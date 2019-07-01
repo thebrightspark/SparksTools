@@ -70,21 +70,23 @@ object ToolUtils {
 	/**
 	 * Gets all similar blocks connected to the input [pos]
 	 */
-	fun getConnectedBlocks(pos: BlockPos, world: World): Set<BlockPos> {
+	fun getConnectedBlocks(pos: BlockPos, world: World, max: Int): Set<BlockPos> {
 		val collected = HashSet<BlockPos>()
 		collected += pos
-		getConnectedBlocks(pos, world.getBlockState(pos), world, collected)
+		getConnectedBlocks(pos, world.getBlockState(pos), world, collected, max)
 		return collected
 	}
 
 	/**
 	 * Recursively collects all blocks connected horizontally, vertically or diagonally from the input
 	 */
-	private fun getConnectedBlocks(pos: BlockPos, refState: IBlockState, world: World, collected: MutableSet<BlockPos>) {
+	private fun getConnectedBlocks(pos: BlockPos, refState: IBlockState, world: World, collected: MutableSet<BlockPos>, max: Int) {
 		BlockPos.getAllInBox(pos.add(-1, -1, -1), pos.add(1, 1, 1)).forEach {
+			if (collected.size >= max)
+				return
 			if (!collected.contains(it) && world.getBlockState(it) == refState) {
 				collected += it
-				getConnectedBlocks(it, refState, world, collected)
+				getConnectedBlocks(it, refState, world, collected, max)
 			}
 		}
 	}
