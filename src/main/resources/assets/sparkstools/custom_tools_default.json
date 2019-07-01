@@ -1,0 +1,250 @@
+[
+    {
+        "type": "hammer",
+        "name": "Wood Hammer",
+        "material": "minecraft:log",
+        "harvestLevel": 0,
+        "durability": 354,
+        "efficiency": 1.2,
+        "attackDamage": 3,
+        "enchantability": 15,
+        "textureColour": "0x866526"
+    },
+    {
+        "type": "hammer",
+        "name": "Stone Hammer",
+        "material": "sparkstools:compressed_cobblestone",
+        "harvestLevel": 1,
+        "durability": 786,
+        "efficiency": 2.4,
+        "attackDamage": 4,
+        "enchantability": 5,
+        "textureColour": "0x9A9A9A"
+    },
+    {
+        "type": "hammer",
+        "material": "blockIron",
+        "harvestLevel": 2,
+        "durability": 1500,
+        "efficiency": 3.6,
+        "attackDamage": 5,
+        "enchantability": 14,
+        "textureColour": "0xFFFFFF"
+    },
+    {
+        "type": "hammer",
+        "material": "blockGold",
+        "harvestLevel": 0,
+        "durability": 192,
+        "efficiency": 7.2,
+        "attackDamage": 3,
+        "enchantability": 22,
+        "textureColour": "0xEAEE57"
+    },
+    {
+        "type": "hammer",
+        "material": "blockDiamond",
+        "harvestLevel": 3,
+        "durability": 9366,
+        "efficiency": 4.8,
+        "attackDamage": 6,
+        "enchantability": 10,
+        "textureColour": "0x33EBCB"
+    },
+    {
+        "type": "hammer",
+        "material": "obsidian",
+        "harvestLevel": 1,
+        "durability": 6000,
+        "efficiency": 2.4,
+        "attackDamage": 3,
+        "enchantability": 5,
+        "textureColour": "0x30244A"
+    },
+    {
+        "type": "excavator",
+        "name": "Wood Excavator",
+        "material": "minecraft:log",
+        "harvestLevel": 0,
+        "durability": 354,
+        "efficiency": 1.2,
+        "attackDamage": 3,
+        "enchantability": 15,
+        "textureColour": "0x866526"
+    },
+    {
+        "type": "excavator",
+        "name": "Stone Excavator",
+        "material": "sparkstools:compressed_cobblestone",
+        "harvestLevel": 1,
+        "durability": 786,
+        "efficiency": 2.4,
+        "attackDamage": 4,
+        "enchantability": 5,
+        "textureColour": "0x9A9A9A"
+    },
+    {
+        "type": "excavator",
+        "material": "blockIron",
+        "harvestLevel": 2,
+        "durability": 1500,
+        "efficiency": 3.6,
+        "attackDamage": 5,
+        "enchantability": 14,
+        "textureColour": "0xFFFFFF"
+    },
+    {
+        "type": "excavator",
+        "material": "blockGold",
+        "harvestLevel": 0,
+        "durability": 192,
+        "efficiency": 7.2,
+        "attackDamage": 3,
+        "enchantability": 22,
+        "textureColour": "0xEAEE57"
+    },
+    {
+        "type": "excavator",
+        "material": "blockDiamond",
+        "harvestLevel": 3,
+        "durability": 9366,
+        "efficiency": 4.8,
+        "attackDamage": 6,
+        "enchantability": 10,
+        "textureColour": "0x33EBCB"
+    },
+    {
+        "type": "excavator",
+        "material": "obsidian",
+        "harvestLevel": 1,
+        "durability": 6000,
+        "efficiency": 2.4,
+        "attackDamage": 3,
+        "enchantability": 5,
+        "textureColour": "0x30244A"
+    },
+    {
+        "type": "lumber axe",
+        "name": "Wood Lumber Axe",
+        "material": "minecraft:log",
+        "harvestLevel": 0,
+        "durability": 354,
+        "efficiency": 1.2,
+        "attackDamage": 3,
+        "enchantability": 15,
+        "textureColour": "0x866526"
+    },
+    {
+        "type": "lumber axe",
+        "name": "Stone Lumber Axe",
+        "material": "sparkstools:compressed_cobblestone",
+        "harvestLevel": 1,
+        "durability": 786,
+        "efficiency": 2.4,
+        "attackDamage": 4,
+        "enchantability": 5,
+        "textureColour": "0x9A9A9A"
+    },
+    {
+        "type": "lumber axe",
+        "material": "blockIron",
+        "harvestLevel": 2,
+        "durability": 1500,
+        "efficiency": 3.6,
+        "attackDamage": 5,
+        "enchantability": 14,
+        "textureColour": "0xFFFFFF"
+    },
+    {
+        "type": "lumber axe",
+        "material": "blockGold",
+        "harvestLevel": 0,
+        "durability": 192,
+        "efficiency": 7.2,
+        "attackDamage": 3,
+        "enchantability": 22,
+        "textureColour": "0xEAEE57"
+    },
+    {
+        "type": "lumber axe",
+        "material": "blockDiamond",
+        "harvestLevel": 3,
+        "durability": 9366,
+        "efficiency": 4.8,
+        "attackDamage": 6,
+        "enchantability": 10,
+        "textureColour": "0x33EBCB"
+    },
+    {
+        "type": "lumber axe",
+        "material": "obsidian",
+        "harvestLevel": 1,
+        "durability": 6000,
+        "efficiency": 2.4,
+        "attackDamage": 3,
+        "enchantability": 5,
+        "textureColour": "0x30244A"
+    },
+    {
+        "type": "plow",
+        "name": "Wood Plow",
+        "material": "minecraft:log",
+        "harvestLevel": 0,
+        "durability": 354,
+        "efficiency": 1.2,
+        "attackDamage": 3,
+        "enchantability": 15,
+        "textureColour": "0x866526"
+    },
+    {
+        "type": "plow",
+        "name": "Stone Plow",
+        "material": "sparkstools:compressed_cobblestone",
+        "harvestLevel": 1,
+        "durability": 786,
+        "efficiency": 2.4,
+        "attackDamage": 4,
+        "enchantability": 5,
+        "textureColour": "0x9A9A9A"
+    },
+    {
+        "type": "plow",
+        "material": "blockIron",
+        "harvestLevel": 2,
+        "durability": 1500,
+        "efficiency": 3.6,
+        "attackDamage": 5,
+        "enchantability": 14,
+        "textureColour": "0xFFFFFF"
+    },
+    {
+        "type": "plow",
+        "material": "blockGold",
+        "harvestLevel": 0,
+        "durability": 192,
+        "efficiency": 7.2,
+        "attackDamage": 3,
+        "enchantability": 22,
+        "textureColour": "0xEAEE57"
+    },
+    {
+        "type": "plow",
+        "material": "blockDiamond",
+        "harvestLevel": 3,
+        "durability": 9366,
+        "efficiency": 4.8,
+        "attackDamage": 6,
+        "enchantability": 10,
+        "textureColour": "0x33EBCB"
+    },
+    {
+        "type": "plow",
+        "material": "obsidian",
+        "harvestLevel": 1,
+        "durability": 6000,
+        "efficiency": 2.4,
+        "attackDamage": 3,
+        "enchantability": 5,
+        "textureColour": "0x30244A"
+    }
+]

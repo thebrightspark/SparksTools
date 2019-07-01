@@ -20,6 +20,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
+import org.apache.commons.io.FileUtils
 import org.apache.logging.log4j.Logger
 import java.io.File
 
@@ -66,6 +67,8 @@ object SparksTools {
         val configDir = File(event.modConfigurationDirectory, MOD_ID)
         configDir.mkdirs()
         customToolsFile = File(configDir, "custom_tools.json")
+        if (!customToolsFile.exists())
+            this::class.java.getResourceAsStream("/assets/$MOD_ID/custom_tools_default.json").use { FileUtils.copyToFile(it, customToolsFile) }
     }
 
     @EventHandler
