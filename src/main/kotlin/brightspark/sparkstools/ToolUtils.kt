@@ -27,7 +27,7 @@ object ToolUtils {
 		val end = BlockPos.MutableBlockPos(pos)
 
 		// Offset area upwards if player is standing on ground and mining horizontally
-		if (!player.capabilities.isFlying && sideHit.axis.isHorizontal && size > 1) {
+		if (size > 1 && sideHit.axis.isHorizontal && player.onGround && pos.y == player.position.y + 1) {
 			start.move(EnumFacing.UP, size - 1)
 			end.move(EnumFacing.UP, size - 1)
 		}
