@@ -7,6 +7,7 @@ import net.minecraft.item.ItemStack
 import net.minecraft.util.NonNullList
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.oredict.OreDictionary
+import kotlin.math.abs
 
 class CustomTool(private val data: CustomToolData) {
 
@@ -74,25 +75,25 @@ class CustomTool(private val data: CustomToolData) {
 	}
 
 	val effectSize: Int
-		get() = data.effectSize ?: 1
+		get() = data.effectSize?.let { abs(it) } ?: 1
 
 	val harvestLevel: Int
-		get() = data.harvestLevel ?: 0
+		get() = data.harvestLevel?.let { abs(it) } ?: 0
 
 	val durability: Int
-		get() = data.durability ?: 1000
+		get() = data.durability?.let { abs(it) } ?: 1000
 
 	val efficiency: Float
-		get() = data.efficiency ?: 1F
+		get() = data.efficiency?.let { abs(it) } ?: 1F
 
 	val attackDamage: Float
-		get() = data.attackDamage ?: 1F
+		get() = data.attackDamage?.let { abs(it) } ?: 1F
 
 	val attackSpeed: Float
 		get() = data.attackSpeed ?: 1F
 
 	val enchantability: Int
-		get() = data.enchantability ?: 0
+		get() = data.enchantability?.let { abs(it) } ?: 0
 
 	override fun toString(): String {
 		return MoreObjects.toStringHelper(this)
