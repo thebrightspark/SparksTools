@@ -73,6 +73,9 @@ class CustomTool(private val data: CustomToolData) {
 		return@let colour
 	}
 
+	val effectSize: Int
+		get() = data.effectSize ?: 1
+
 	val harvestLevel: Int
 		get() = data.harvestLevel ?: 0
 

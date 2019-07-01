@@ -5,6 +5,7 @@ data class CustomToolData(
 	val name: String?,
 	val material: String,
 	val textureColour: String?,
+	val effectSize: Int?,
 	val harvestLevel: Int?,
 	val durability: Int?,
 	val efficiency: Float?,

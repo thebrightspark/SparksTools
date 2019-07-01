@@ -22,29 +22,29 @@ object ToolUtils {
 	 */
 	fun getSquareBreakArea(stack: ItemStack, pos: BlockPos, sideHit: EnumFacing, player: EntityPlayer): Iterable<BlockPos> {
 		val item = stack.item as SHToolItem
-		val mineSize = 1 // TEMP
+		val size = item.tool.effectSize
 		val start = BlockPos.MutableBlockPos(pos)
 		val end = BlockPos.MutableBlockPos(pos)
 
 		// Offset area upwards if player is standing on ground and mining horizontally
-		if (!player.capabilities.isFlying && sideHit.axis.isHorizontal && mineSize > 1) {
-			start.move(EnumFacing.UP, mineSize - 1)
-			end.move(EnumFacing.UP, mineSize - 1)
+		if (!player.capabilities.isFlying && sideHit.axis.isHorizontal && size > 1) {
+			start.move(EnumFacing.UP, size - 1)
+			end.move(EnumFacing.UP, size - 1)
 		}
 
 		// Move start and end positions to area corners
 		when (sideHit) {
 			EnumFacing.NORTH, EnumFacing.SOUTH -> {
-				start.move(EnumFacing.DOWN, mineSize).move(EnumFacing.WEST, mineSize)
-				end.move(EnumFacing.UP, mineSize).move(EnumFacing.EAST, mineSize)
+				start.move(EnumFacing.DOWN, size).move(EnumFacing.WEST, size)
+				end.move(EnumFacing.UP, size).move(EnumFacing.EAST, size)
 			}
 			EnumFacing.WEST, EnumFacing.EAST -> {
-				start.move(EnumFacing.DOWN, mineSize).move(EnumFacing.NORTH, mineSize)
-				end.move(EnumFacing.UP, mineSize).move(EnumFacing.SOUTH, mineSize)
+				start.move(EnumFacing.DOWN, size).move(EnumFacing.NORTH, size)
+				end.move(EnumFacing.UP, size).move(EnumFacing.SOUTH, size)
 			}
 			EnumFacing.UP, EnumFacing.DOWN -> {
-				start.move(EnumFacing.WEST, mineSize).move(EnumFacing.NORTH, mineSize)
-				end.move(EnumFacing.EAST, mineSize).move(EnumFacing.SOUTH, mineSize)
+				start.move(EnumFacing.WEST, size).move(EnumFacing.NORTH, size)
+				end.move(EnumFacing.EAST, size).move(EnumFacing.SOUTH, size)
 			}
 		}
 
@@ -56,10 +56,9 @@ object ToolUtils {
 	 * Gets an [Iterable] of [BlockPos] that match the [blockTypes] filter around the same Y level as the [pos]
 	 */
 	fun getGroundBlocks(stack: ItemStack, pos: BlockPos, player: EntityPlayer, blockTypes: Array<Block>): Iterable<BlockPos> {
-		//val item = stack.item as SHToolItem
-		val mineSize = 1 // TEMP
-		val start = pos.add(-mineSize, 0, -mineSize)
-		val end = pos.add(mineSize, 0, mineSize)
+		val size = (stack.item as SHToolItem).tool.effectSize
+		val start = pos.add(-size, 0, -size)
+		val end = pos.add(size, 0, size)
 		val world = player.world
 		return BlockPos.getAllInBox(start, end).filter {
 			val block = world.getBlockState(it).block
