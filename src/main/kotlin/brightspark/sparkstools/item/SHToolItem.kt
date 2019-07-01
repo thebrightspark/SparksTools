@@ -41,7 +41,7 @@ abstract class SHToolItem(val tool: CustomTool) : Item() {
 		    .forEach { ToolUtils.breakBlock(stack, player.world, player, it, pos) }
     }
 
-	fun isEffective(stack: ItemStack, state: IBlockState): Boolean =
+	open fun isEffective(stack: ItemStack, state: IBlockState): Boolean =
 		getToolClasses(stack).any { state.block.isToolEffective(it, state) } ||
 			tool.type.effectiveMaterials.contains(state.material)
 
