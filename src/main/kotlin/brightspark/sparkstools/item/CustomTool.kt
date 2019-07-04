@@ -28,11 +28,23 @@ class CustomTool(private val data: CustomToolData) {
 	/**
 	 * A list of [ItemStack]s that can be used to create this tool
 	 */
-	val material: NonNullList<ItemStack> = data.material.let {
-		val stacks = Item.getByNameOrId(it)?.let { item -> NonNullList.from(ItemStack.EMPTY, ItemStack(item)) } ?: OreDictionary.getOres(it)
+	val material: NonNullList<ItemStack> = data.material.let material@{
+		val colons = it.count { c -> c == ':' }
+		if (colons > 0) {
+			val regName = if (colons == 1) it else it.substringBeforeLast(':')
+			val meta = if (colons == 1) 0 else it.substringAfterLast(':', "0").toIntOrNull() ?: 0
+			Item.getByNameOrId(regName)?.let { item ->
+				return@let NonNullList.from(ItemStack.EMPTY, ItemStack(item, 1, meta))
+			}?.let { stack ->
+				return@material stack
+			}
+			SparksTools.logger.warn("Tried parsing material '$it' as an item unsuccessfully (tried using registry name '$regName' and meta '$meta') - falling back to trying ore dictionary")
+		}
+
+		val stacks = OreDictionary.getOres(it)
 		if (stacks.isEmpty())
 			throw RuntimeException("Couldn't find an item or ore dictionary for the material $it")
-		return@let stacks
+		return@material stacks
 	}
 
 	/**
