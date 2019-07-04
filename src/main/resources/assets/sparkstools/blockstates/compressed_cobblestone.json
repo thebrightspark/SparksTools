@@ -1,7 +1,10 @@
 {
     "forge_marker": 1,
     "defaults": {
-        "model": "cobblestone"
+        "model": "cube_all",
+        "textures": {
+            "all": "sparkstools:blocks/compressed_cobblestone"
+        }
     },
     "variants": {
         "normal": [{}],
