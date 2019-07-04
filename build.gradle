@@ -43,29 +43,10 @@ repositories {
     maven {
         url "http://maven.shadowfacts.net/"
     }
-    maven {
-        // JEI fallback
-        name = "ModMaven"
-        url = "modmaven.k-4u.nl"
-    }
-    maven {
-        // Craft Tweaker 2
-        name 'jared'
-        url "http://maven.blamejared.com/"
-    }
 }
 
 dependencies {
     compile group: "net.shadowfacts", name: "Forgelin", version: "1.8.2"
-
-    // compile against the JEI API
-    //deobfCompile "mezz.jei:jei_${project.minecraft_version}:${project.jei_version}:api"
-    // at runtime, use the full JEI jar
-    //runtime "mezz.jei:jei_${project.minecraft_version}:${project.jei_version}"
-
-    //CraftTweaker2
-    //deobfCompile "CraftTweaker2:CraftTweaker2-API:${project.crafttweaker_version}"
-    //deobfCompile "CraftTweaker2:CraftTweaker2-MC1120-Main:1.12-${project.crafttweaker_version}"
 
     // you may put jars on which you depend on in ./libs
     // or you may define them like so..
