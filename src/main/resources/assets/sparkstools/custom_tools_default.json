@@ -2,12 +2,13 @@
     {
         "type": "hammer",
         "name": "Wood Hammer",
-        "material": "minecraft:log",
+        "material": "logWood",
         "harvestLevel": 0,
         "durability": 354,
         "efficiency": 1.2,
         "attackDamage": 3,
-        "enchantability": 15
+        "enchantability": 15,
+        "textureColour": "0x97784a"
     },
     {
         "type": "hammer",
@@ -58,12 +59,13 @@
     {
         "type": "excavator",
         "name": "Wood Excavator",
-        "material": "minecraft:log",
+        "material": "logWood",
         "harvestLevel": 0,
         "durability": 354,
         "efficiency": 1.2,
         "attackDamage": 3,
-        "enchantability": 15
+        "enchantability": 15,
+        "textureColour": "0x97784a"
     },
     {
         "type": "excavator",
@@ -114,12 +116,13 @@
     {
         "type": "lumber axe",
         "name": "Wood Lumber Axe",
-        "material": "minecraft:log",
+        "material": "logWood",
         "harvestLevel": 0,
         "durability": 354,
         "efficiency": 1.2,
         "attackDamage": 3,
-        "enchantability": 15
+        "enchantability": 15,
+        "textureColour": "0x97784a"
     },
     {
         "type": "lumber axe",
@@ -170,12 +173,13 @@
     {
         "type": "plow",
         "name": "Wood Plow",
-        "material": "minecraft:log",
+        "material": "logWood",
         "harvestLevel": 0,
         "durability": 354,
         "efficiency": 1.2,
         "attackDamage": 3,
-        "enchantability": 15
+        "enchantability": 15,
+        "textureColour": "0x97784a"
     },
     {
         "type": "plow",
