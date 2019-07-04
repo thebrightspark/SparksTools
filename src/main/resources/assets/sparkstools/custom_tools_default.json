@@ -7,8 +7,7 @@
         "durability": 354,
         "efficiency": 1.2,
         "attackDamage": 3,
-        "enchantability": 15,
-        "textureColour": "0x866526"
+        "enchantability": 15
     },
     {
         "type": "hammer",
@@ -18,8 +17,7 @@
         "durability": 786,
         "efficiency": 2.4,
         "attackDamage": 4,
-        "enchantability": 5,
-        "textureColour": "0x9A9A9A"
+        "enchantability": 5
     },
     {
         "type": "hammer",
@@ -28,8 +26,7 @@
         "durability": 1500,
         "efficiency": 3.6,
         "attackDamage": 5,
-        "enchantability": 14,
-        "textureColour": "0xFFFFFF"
+        "enchantability": 14
     },
     {
         "type": "hammer",
@@ -38,8 +35,7 @@
         "durability": 192,
         "efficiency": 7.2,
         "attackDamage": 3,
-        "enchantability": 22,
-        "textureColour": "0xEAEE57"
+        "enchantability": 22
     },
     {
         "type": "hammer",
@@ -48,8 +44,7 @@
         "durability": 9366,
         "efficiency": 4.8,
         "attackDamage": 6,
-        "enchantability": 10,
-        "textureColour": "0x33EBCB"
+        "enchantability": 10
     },
     {
         "type": "hammer",
@@ -58,8 +53,7 @@
         "durability": 6000,
         "efficiency": 2.4,
         "attackDamage": 3,
-        "enchantability": 5,
-        "textureColour": "0x30244A"
+        "enchantability": 5
     },
     {
         "type": "excavator",
@@ -69,8 +63,7 @@
         "durability": 354,
         "efficiency": 1.2,
         "attackDamage": 3,
-        "enchantability": 15,
-        "textureColour": "0x866526"
+        "enchantability": 15
     },
     {
         "type": "excavator",
@@ -80,8 +73,7 @@
         "durability": 786,
         "efficiency": 2.4,
         "attackDamage": 4,
-        "enchantability": 5,
-        "textureColour": "0x9A9A9A"
+        "enchantability": 5
     },
     {
         "type": "excavator",
@@ -90,8 +82,7 @@
         "durability": 1500,
         "efficiency": 3.6,
         "attackDamage": 5,
-        "enchantability": 14,
-        "textureColour": "0xFFFFFF"
+        "enchantability": 14
     },
     {
         "type": "excavator",
@@ -100,8 +91,7 @@
         "durability": 192,
         "efficiency": 7.2,
         "attackDamage": 3,
-        "enchantability": 22,
-        "textureColour": "0xEAEE57"
+        "enchantability": 22
     },
     {
         "type": "excavator",
@@ -110,8 +100,7 @@
         "durability": 9366,
         "efficiency": 4.8,
         "attackDamage": 6,
-        "enchantability": 10,
-        "textureColour": "0x33EBCB"
+        "enchantability": 10
     },
     {
         "type": "excavator",
@@ -120,8 +109,7 @@
         "durability": 6000,
         "efficiency": 2.4,
         "attackDamage": 3,
-        "enchantability": 5,
-        "textureColour": "0x30244A"
+        "enchantability": 5
     },
     {
         "type": "lumber axe",
@@ -131,8 +119,7 @@
         "durability": 354,
         "efficiency": 1.2,
         "attackDamage": 3,
-        "enchantability": 15,
-        "textureColour": "0x866526"
+        "enchantability": 15
     },
     {
         "type": "lumber axe",
@@ -142,8 +129,7 @@
         "durability": 786,
         "efficiency": 2.4,
         "attackDamage": 4,
-        "enchantability": 5,
-        "textureColour": "0x9A9A9A"
+        "enchantability": 5
     },
     {
         "type": "lumber axe",
@@ -152,8 +138,7 @@
         "durability": 1500,
         "efficiency": 3.6,
         "attackDamage": 5,
-        "enchantability": 14,
-        "textureColour": "0xFFFFFF"
+        "enchantability": 14
     },
     {
         "type": "lumber axe",
@@ -162,8 +147,7 @@
         "durability": 192,
         "efficiency": 7.2,
         "attackDamage": 3,
-        "enchantability": 22,
-        "textureColour": "0xEAEE57"
+        "enchantability": 22
     },
     {
         "type": "lumber axe",
@@ -172,8 +156,7 @@
         "durability": 9366,
         "efficiency": 4.8,
         "attackDamage": 6,
-        "enchantability": 10,
-        "textureColour": "0x33EBCB"
+        "enchantability": 10
     },
     {
         "type": "lumber axe",
@@ -182,8 +165,7 @@
         "durability": 6000,
         "efficiency": 2.4,
         "attackDamage": 3,
-        "enchantability": 5,
-        "textureColour": "0x30244A"
+        "enchantability": 5
     },
     {
         "type": "plow",
@@ -193,8 +175,7 @@
         "durability": 354,
         "efficiency": 1.2,
         "attackDamage": 3,
-        "enchantability": 15,
-        "textureColour": "0x866526"
+        "enchantability": 15
     },
     {
         "type": "plow",
@@ -204,8 +185,7 @@
         "durability": 786,
         "efficiency": 2.4,
         "attackDamage": 4,
-        "enchantability": 5,
-        "textureColour": "0x9A9A9A"
+        "enchantability": 5
     },
     {
         "type": "plow",
@@ -214,8 +194,7 @@
         "durability": 1500,
         "efficiency": 3.6,
         "attackDamage": 5,
-        "enchantability": 14,
-        "textureColour": "0xFFFFFF"
+        "enchantability": 14
     },
     {
         "type": "plow",
@@ -224,8 +203,7 @@
         "durability": 192,
         "efficiency": 7.2,
         "attackDamage": 3,
-        "enchantability": 22,
-        "textureColour": "0xEAEE57"
+        "enchantability": 22
     },
     {
         "type": "plow",
@@ -234,8 +212,7 @@
         "durability": 9366,
         "efficiency": 4.8,
         "attackDamage": 6,
-        "enchantability": 10,
-        "textureColour": "0x33EBCB"
+        "enchantability": 10
     },
     {
         "type": "plow",
@@ -244,7 +221,6 @@
         "durability": 6000,
         "efficiency": 2.4,
         "attackDamage": 3,
-        "enchantability": 5,
-        "textureColour": "0x30244A"
+        "enchantability": 5
     }
 ]
