@@ -9,6 +9,7 @@ import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.block.model.ModelResourceLocation
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
+import net.minecraft.util.NonNullList
 import net.minecraftforge.client.event.ColorHandlerEvent
 import net.minecraftforge.client.model.ModelLoader
 import net.minecraftforge.fml.relauncher.Side
@@ -21,10 +22,12 @@ import java.io.FileReader
 import java.io.Reader
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 import kotlin.math.abs
 import kotlin.math.sqrt
 
 object SHItems {
+	val colourCache = HashMap<NonNullList<ItemStack>, Int>()
 	val toolItems = ArrayList<SHToolItem>()
 
 	private var lastTabIconSecond = 0L
@@ -86,7 +89,12 @@ object SHItems {
 	@SideOnly(Side.CLIENT)
 	fun calcMissingMaterialColours() {
 		SparksTools.logger.info("Starting to calculate tool colours for tools missing colours")
-		toolItems.filter { it.tool.textureColour == null }.forEach { calcMaterialColour(it.tool) }
+		toolItems.filter { it.tool.textureColour == null }
+				.map { it.tool }
+				.forEach { colourCache.getOrPut(it.material) {
+					calcMaterialColour(it)
+					return@getOrPut it.textureColour!!
+				} }
 		SparksTools.logger.info("Finished calculating tool colours")
 		val toolsMissingColours = toolItems.filter { it.tool.textureColour == null }.joinToString("\n", transform = { it.tool.toString() })
 		if (toolsMissingColours.isNotEmpty())
