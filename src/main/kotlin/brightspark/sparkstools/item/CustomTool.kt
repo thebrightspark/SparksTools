@@ -9,7 +9,7 @@ import net.minecraft.util.ResourceLocation
 import net.minecraftforge.oredict.OreDictionary
 import kotlin.math.abs
 
-class CustomTool(private val data: CustomToolData) {
+class CustomTool(val data: CustomToolData) {
 
 	init {
 		@Suppress("SENSELESS_COMPARISON")

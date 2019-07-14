@@ -9,7 +9,6 @@ import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.block.model.ModelResourceLocation
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
-import net.minecraft.util.NonNullList
 import net.minecraftforge.client.event.ColorHandlerEvent
 import net.minecraftforge.client.model.ModelLoader
 import net.minecraftforge.fml.relauncher.Side
@@ -27,7 +26,7 @@ import kotlin.math.abs
 import kotlin.math.sqrt
 
 object SHItems {
-	val colourCache = HashMap<NonNullList<ItemStack>, Int>()
+	private val colourCache = HashMap<String, Int?>()
 	val toolItems = ArrayList<SHToolItem>()
 
 	private var lastTabIconSecond = 0L
@@ -90,11 +89,8 @@ object SHItems {
 	fun calcMissingMaterialColours() {
 		SparksTools.logger.info("Starting to calculate tool colours for tools missing colours")
 		toolItems.filter { it.tool.textureColour == null }
-				.map { it.tool }
-				.forEach { colourCache.getOrPut(it.material) {
-					calcMaterialColour(it)
-					return@getOrPut it.textureColour!!
-				} }
+			.map { it.tool }
+			.forEach { it.textureColour = colourCache.getOrPut(it.data.material) { calcMaterialColour(it) } }
 		SparksTools.logger.info("Finished calculating tool colours")
 		val toolsMissingColours = toolItems.filter { it.tool.textureColour == null }.joinToString("\n", transform = { it.tool.toString() })
 		if (toolsMissingColours.isNotEmpty())
@@ -105,11 +101,11 @@ object SHItems {
 	 * Calculates the material colour for the [tool] and sets it to the [CustomTool.textureColour]
 	 */
 	@SideOnly(Side.CLIENT)
-	private fun calcMaterialColour(tool: CustomTool) {
+	private fun calcMaterialColour(tool: CustomTool): Int? {
 		val colours = tool.material.mapNotNull { getAverageColour(it) }.toSet()
 		if (colours.isEmpty()) {
 			SparksTools.logger.error("Found no valid material to calculate a colour for the tool $tool")
-			return
+			return null
 		}
 		val num = colours.size
 		val total = colours.reduce { acc, triple ->
@@ -120,8 +116,8 @@ object SHItems {
 		}
 		val colour = Color(total.left / num, total.middle / num, total.right / num)
 		val rgb = colour.rgb
-		tool.textureColour = rgb
-		SparksTools.logger.info("Calculated the colour $colour ($rgb) for the tool $tool")
+		SparksTools.logger.info("Calculated the colour $colour ($rgb) for the tool material '${tool.data.material}'")
+		return rgb
 	}
 
 	/**
