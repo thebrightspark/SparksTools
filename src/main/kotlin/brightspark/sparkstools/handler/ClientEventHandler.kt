@@ -44,7 +44,7 @@ object ClientEventHandler {
 			lastSide = side
 			lastOnGround = player.onGround
 			positionsToRender = if (heldStack.item is SHToolItem && posLookingAt != null && side != null)
-				(heldStack.item as SHToolItem).getBlocksToBreak(heldStack, posLookingAt!!, side!!, player)
+				(heldStack.item as SHToolItem).getBlocksToSelect(heldStack, posLookingAt!!, side!!, player)
 			else
 				null
 		}
