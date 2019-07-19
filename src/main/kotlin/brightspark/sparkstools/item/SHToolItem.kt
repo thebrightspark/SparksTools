@@ -45,7 +45,26 @@ abstract class SHToolItem(val tool: CustomTool) : Item() {
 		getToolClasses(stack).any { state.block.isToolEffective(it, state) } ||
 			tool.type.effectiveMaterials.contains(state.material)
 
-    override fun onBlockStartBreak(stack: ItemStack, pos: BlockPos, player: EntityPlayer): Boolean {
+	// Overridden to increase the reach a little to ensure getting extra blocks always works
+	override fun rayTrace(worldIn: World, playerIn: EntityPlayer, useLiquids: Boolean): RayTraceResult? {
+		val f = playerIn.rotationPitch
+		val f1 = playerIn.rotationYaw
+		val d0 = playerIn.posX
+		val d1 = playerIn.posY + playerIn.getEyeHeight().toDouble()
+		val d2 = playerIn.posZ
+		val vec3d = Vec3d(d0, d1, d2)
+		val f2 = MathHelper.cos(-f1 * 0.017453292f - Math.PI.toFloat())
+		val f3 = MathHelper.sin(-f1 * 0.017453292f - Math.PI.toFloat())
+		val f4 = -MathHelper.cos(-f * 0.017453292f)
+		val f5 = MathHelper.sin(-f * 0.017453292f)
+		val f6 = f3 * f4
+		val f7 = f2 * f4
+		val d3 = playerIn.getEntityAttribute(EntityPlayer.REACH_DISTANCE).attributeValue * 1.5
+		val vec3d1 = vec3d.add(f6.toDouble() * d3, f5.toDouble() * d3, f7.toDouble() * d3)
+		return worldIn.rayTraceBlocks(vec3d, vec3d1, useLiquids, !useLiquids, false)
+	}
+
+	override fun onBlockStartBreak(stack: ItemStack, pos: BlockPos, player: EntityPlayer): Boolean {
         @Suppress("UNNECESSARY_SAFE_CALL")
         rayTrace(player.world, player, false)?.let { breakBlocks(stack, pos, it.sideHit, player) }
         return super.onBlockStartBreak(stack, pos, player)
