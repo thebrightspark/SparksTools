@@ -5,7 +5,7 @@
         {
           "modid": "sparkstools",
           "name": "Spark's Tools",
-          "description": "",
+          "description": "Successor to Sparks Hammers, but now adding all kinds of tools!",
           "version": "${version}",
           "mcversion": "${mcversion}",
           "url": "https://www.curseforge.com/minecraft/mc-mods/sparks-tools",
