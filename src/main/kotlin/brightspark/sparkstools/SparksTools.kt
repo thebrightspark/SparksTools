@@ -24,7 +24,9 @@ import org.apache.commons.io.FileUtils
 import org.apache.logging.log4j.Logger
 import java.io.File
 
-@Mod(modid = SparksTools.MOD_ID, name = SparksTools.NAME, version = SparksTools.VERSION, modLanguageAdapter = "net.shadowfacts.forgelin.KotlinAdapter")
+@Mod(modid = SparksTools.MOD_ID, name = SparksTools.NAME, version = SparksTools.VERSION,
+    dependencies = "required-after:forgelin;",
+    modLanguageAdapter = "net.shadowfacts.forgelin.KotlinAdapter")
 @Mod.EventBusSubscriber
 object SparksTools {
     const val MOD_ID = "sparkstools"
