@@ -24,20 +24,15 @@ import org.apache.commons.io.FileUtils
 import org.apache.logging.log4j.Logger
 import java.io.File
 
-@Mod(modid = SparksTools.MOD_ID, name = SparksTools.NAME, version = SparksTools.VERSION,
+@Mod(modid = SparksTools.MOD_ID, version = SparksTools.VERSION, useMetadata = true,
     dependencies = "required-after:forgelin;",
     modLanguageAdapter = "net.shadowfacts.forgelin.KotlinAdapter")
 @Mod.EventBusSubscriber
 object SparksTools {
     const val MOD_ID = "sparkstools"
-    const val NAME = "Spark's Tools"
     const val VERSION = "@VERSION@"
 
     lateinit var logger: Logger
-
-    @Mod.Instance(MOD_ID)
-    lateinit var instance: SparksTools
-
     lateinit var customToolsFile: File
 
     val tab = object : CreativeTabs(MOD_ID) {
