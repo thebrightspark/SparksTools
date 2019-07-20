@@ -20,7 +20,16 @@ class ItemPlow(tool: CustomTool) : SHToolItem(tool) {
 	}
 
 	override fun getBlocksToBreakIfEffective(stack: ItemStack, pos: BlockPos, side: EnumFacing, player: EntityPlayer): Iterable<BlockPos> =
-		emptySet()
+		ToolUtils.getSquareBreakArea(stack, pos, side, player)
+
+	override fun getBlocksToSelect(stack: ItemStack, pos: BlockPos, side: EnumFacing, player: EntityPlayer): Iterable<BlockPos> {
+		val state = player.world.getBlockState(pos)
+		return when {
+			tillableBlocks.contains(state.block) -> ToolUtils.getGroundBlocks(stack, pos, player, tillableBlocks)
+			isEffective(stack, state) -> ToolUtils.getSquareBreakArea(stack, pos, side, player)
+			else -> emptySet()
+		}
+	}
 
 	override fun onItemUse(player: EntityPlayer, world: World, pos: BlockPos, hand: EnumHand, facing: EnumFacing, hitX: Float, hitY: Float, hitZ: Float): EnumActionResult {
 		val stack = player.getHeldItem(hand)
