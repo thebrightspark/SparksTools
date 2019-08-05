@@ -5,9 +5,19 @@ buildscript {
     }
     dependencies {
         classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$project.kotlin_version"
     }
 }
 apply plugin: 'net.minecraftforge.gradle.forge'
+
+/*
+Note for future self:
+    To get this working with recent Kotlin versions, Gradle will need to be updated.
+    To do that, make sure the below line and the compileKotlin method are commented out and run:
+        "gradlew wrapper --gradle-version=4.10.3"
+    Once done, uncomment and then run "setupDecompWorkspace idea" again.
+ */
+apply plugin: "kotlin"
 //Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 
 
@@ -16,9 +26,8 @@ group = project.base_package // http://maven.apache.org/guides/mini/guide-naming
 archivesBaseName = project.mod_name
 
 sourceCompatibility = targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
-compileJava {
-    sourceCompatibility = targetCompatibility = '1.8'
-}
+compileJava { sourceCompatibility = targetCompatibility = '1.8' }
+compileKotlin { kotlinOptions { jvmTarget = "1.8" } }
 
 minecraft {
     version = "${project.mc_version}-${project.forge_version}"
