@@ -12,7 +12,10 @@ import net.minecraft.item.crafting.IRecipe
 import net.minecraft.util.NonNullList
 import net.minecraftforge.client.event.ColorHandlerEvent
 import net.minecraftforge.client.event.ModelRegistryEvent
+import net.minecraftforge.common.config.Config
+import net.minecraftforge.common.config.ConfigManager
 import net.minecraftforge.event.RegistryEvent
+import net.minecraftforge.fml.client.event.ConfigChangedEvent
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.Mod.EventHandler
 import net.minecraftforge.fml.common.event.FMLInitializationEvent
@@ -73,6 +76,13 @@ object SparksTools {
         if (event.side == Side.CLIENT)
             SHItems.calcMissingMaterialColours()
     }
+
+	@SubscribeEvent
+	@JvmStatic
+	fun configChanged(event: ConfigChangedEvent.OnConfigChangedEvent) {
+		if (event.modID == MOD_ID)
+			ConfigManager.sync(MOD_ID, Config.Type.INSTANCE)
+	}
 
     @SubscribeEvent
     @JvmStatic
