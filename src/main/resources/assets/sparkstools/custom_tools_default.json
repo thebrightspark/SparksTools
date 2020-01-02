@@ -226,5 +226,62 @@
         "efficiency": 2.4,
         "attackDamage": 3,
         "enchantability": 5
+    },
+    {
+        "type": "sickle",
+        "name": "Wood Sickle",
+        "material": "logWood",
+        "harvestLevel": 0,
+        "durability": 354,
+        "efficiency": 1.2,
+        "attackDamage": 3,
+        "enchantability": 15,
+        "textureColour": "0x97784a"
+    },
+    {
+        "type": "sickle",
+        "name": "Stone Sickle",
+        "material": "sparkstools:compressed_cobblestone",
+        "harvestLevel": 1,
+        "durability": 786,
+        "efficiency": 2.4,
+        "attackDamage": 4,
+        "enchantability": 5
+    },
+    {
+        "type": "sickle",
+        "material": "blockIron",
+        "harvestLevel": 2,
+        "durability": 1500,
+        "efficiency": 3.6,
+        "attackDamage": 5,
+        "enchantability": 14
+    },
+    {
+        "type": "sickle",
+        "material": "blockGold",
+        "harvestLevel": 0,
+        "durability": 192,
+        "efficiency": 7.2,
+        "attackDamage": 3,
+        "enchantability": 22
+    },
+    {
+        "type": "sickle",
+        "material": "blockDiamond",
+        "harvestLevel": 3,
+        "durability": 9366,
+        "efficiency": 4.8,
+        "attackDamage": 6,
+        "enchantability": 10
+    },
+    {
+        "type": "sickle",
+        "material": "obsidian",
+        "harvestLevel": 1,
+        "durability": 6000,
+        "efficiency": 2.4,
+        "attackDamage": 3,
+        "enchantability": 5
     }
 ]

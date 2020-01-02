@@ -58,6 +58,7 @@ object SHItems {
 				ToolType.EXCAVATOR -> ItemExcavator(it)
 				ToolType.LUMBER_AXE -> ItemLumberAxe(it)
 				ToolType.PLOW -> ItemPlow(it)
+				ToolType.SICKLE -> ItemSickle(it)
 			}
 			SparksTools.logger.info("Registering ${item.registryName} -> ${item.tool}")
 			toolItems += item

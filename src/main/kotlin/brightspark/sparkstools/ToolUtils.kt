@@ -18,7 +18,7 @@ import net.minecraftforge.event.ForgeEventFactory
 
 object ToolUtils {
 	/**
-	 * Gets an [Iterable] of [BlockPos] for the area to break
+	 * Gets an [Iterable] of [BlockPos] for the square area to break
 	 */
 	fun getSquareBreakArea(stack: ItemStack, pos: BlockPos, sideHit: EnumFacing, player: EntityPlayer): Iterable<BlockPos> {
 		val item = stack.item as SHToolItem
@@ -48,8 +48,7 @@ object ToolUtils {
 			}
 		}
 
-		val world = player.world
-		return BlockPos.getAllInBox(start, end).filter { item.isEffective(stack, world.getBlockState(it)) }
+		return BlockPos.getAllInBox(start, end).filter { item.isEffective(stack, player.world.getBlockState(it)) }
 	}
 
 	/**
@@ -64,6 +63,17 @@ object ToolUtils {
 			val block = world.getBlockState(it).block
 			blockTypes.contains(block) && player.canPlayerEdit(it, EnumFacing.UP, stack)
 		}
+	}
+
+	/**
+	 * Gets an [Iterable] of [BlockPos] for the cube area to break
+	 */
+	fun getCubeBreakArea(stack: ItemStack, pos: BlockPos, player: EntityPlayer): Iterable<BlockPos> {
+		val item = stack.item as SHToolItem
+		val size = item.tool.effectSize
+		val start = BlockPos.MutableBlockPos(pos).move(EnumFacing.UP, size).move(EnumFacing.NORTH, size).move(EnumFacing.WEST, size)
+		val end = BlockPos.MutableBlockPos(pos).move(EnumFacing.DOWN, size).move(EnumFacing.SOUTH, size).move(EnumFacing.EAST, size)
+		return BlockPos.getAllInBox(start, end).filter { item.isEffective(stack, player.world.getBlockState(it)) }
 	}
 
 	/**

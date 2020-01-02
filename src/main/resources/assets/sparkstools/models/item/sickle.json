@@ -1,0 +1,7 @@
+{
+    "parent": "item/handheld",
+    "textures": {
+        "layer0": "sparkstools:items/sickle_handle",
+        "layer1": "sparkstools:items/sickle_head"
+    }
+}
