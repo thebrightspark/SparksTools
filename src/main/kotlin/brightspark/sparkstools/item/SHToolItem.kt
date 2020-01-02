@@ -22,18 +22,18 @@ import net.minecraftforge.fml.relauncher.SideOnly
 import net.minecraftforge.oredict.OreDictionary
 
 abstract class SHToolItem(val tool: CustomTool) : Item() {
-    init {
-	    registryName = tool.registryName
-        translationKey = tool.registryName.path
-        creativeTab = SparksTools.tab
-	    maxStackSize = 1
-	    maxDamage = tool.durability
-    }
+	init {
+		registryName = tool.registryName
+		translationKey = tool.registryName.path
+		creativeTab = SparksTools.tab
+		maxStackSize = 1
+		maxDamage = tool.durability
+	}
 
 	internal abstract fun getBlocksToBreakIfEffective(stack: ItemStack, pos: BlockPos, side: EnumFacing, player: EntityPlayer): Iterable<BlockPos>
 
 	open fun getBlocksToSelect(stack: ItemStack, pos: BlockPos, side: EnumFacing, player: EntityPlayer): Iterable<BlockPos> =
-			getBlocksToBreak(stack, pos, side, player)
+		getBlocksToBreak(stack, pos, side, player)
 
 	fun getBlocksToBreak(stack: ItemStack, pos: BlockPos, side: EnumFacing, player: EntityPlayer): Iterable<BlockPos> =
 		if (isEffective(stack, player.world.getBlockState(pos)))
@@ -41,11 +41,11 @@ abstract class SHToolItem(val tool: CustomTool) : Item() {
 		else
 			emptySet()
 
-    open fun breakBlocks(stack: ItemStack, pos: BlockPos, sideHit: EnumFacing, player: EntityPlayer, breakInputPos: Boolean = false) {
-	    getBlocksToBreak(stack, pos, sideHit, player)
-		    .filter { (breakInputPos || it != pos) && player.canPlayerEdit(pos, sideHit, stack) && !super.onBlockStartBreak(stack, it, player) }
-		    .forEach { ToolUtils.breakBlock(stack, player.world, player, it, pos) }
-    }
+	open fun breakBlocks(stack: ItemStack, pos: BlockPos, sideHit: EnumFacing, player: EntityPlayer, breakInputPos: Boolean = false) {
+		getBlocksToBreak(stack, pos, sideHit, player)
+			.filter { (breakInputPos || it != pos) && player.canPlayerEdit(pos, sideHit, stack) && !super.onBlockStartBreak(stack, it, player) }
+			.forEach { ToolUtils.breakBlock(stack, player.world, player, it, pos) }
+	}
 
 	fun isEffective(stack: ItemStack, state: IBlockState): Boolean =
 		getToolClasses(stack).any { state.block.isToolEffective(it, state) } ||
@@ -71,16 +71,16 @@ abstract class SHToolItem(val tool: CustomTool) : Item() {
 	}
 
 	override fun onBlockStartBreak(stack: ItemStack, pos: BlockPos, player: EntityPlayer): Boolean {
-        @Suppress("UNNECESSARY_SAFE_CALL")
-        rayTrace(player.world, player, false)?.let { breakBlocks(stack, pos, it.sideHit, player) }
-        return super.onBlockStartBreak(stack, pos, player)
-    }
+		@Suppress("UNNECESSARY_SAFE_CALL")
+		rayTrace(player.world, player, false)?.let { breakBlocks(stack, pos, it.sideHit, player) }
+		return super.onBlockStartBreak(stack, pos, player)
+	}
 
-    override fun canHarvestBlock(state: IBlockState, stack: ItemStack): Boolean {
-        val requiredTool = state.block.getHarvestTool(state)
-        return state.material.isToolNotRequired || requiredTool == null ||
-            getHarvestLevel(stack, requiredTool, null, state) >= state.block.getHarvestLevel(state)
-    }
+	override fun canHarvestBlock(state: IBlockState, stack: ItemStack): Boolean {
+		val requiredTool = state.block.getHarvestTool(state)
+		return state.material.isToolNotRequired || requiredTool == null ||
+			getHarvestLevel(stack, requiredTool, null, state) >= state.block.getHarvestLevel(state)
+	}
 
 	override fun hitEntity(stack: ItemStack, target: EntityLivingBase, attacker: EntityLivingBase): Boolean {
 		stack.damageItem(2, attacker)
@@ -113,10 +113,10 @@ abstract class SHToolItem(val tool: CustomTool) : Item() {
 	}
 
 	override fun getDestroySpeed(stack: ItemStack, state: IBlockState): Float =
-        if (isEffective(stack, state)) tool.efficiency else 1F
+		if (isEffective(stack, state)) tool.efficiency else 1F
 
-    override fun getHarvestLevel(stack: ItemStack, toolClass: String, player: EntityPlayer?, blockState: IBlockState?): Int =
-	    tool.harvestLevel
+	override fun getHarvestLevel(stack: ItemStack, toolClass: String, player: EntityPlayer?, blockState: IBlockState?): Int =
+		tool.harvestLevel
 
-    override fun getToolClasses(stack: ItemStack): Set<String> = tool.type.toolTypes
+	override fun getToolClasses(stack: ItemStack): Set<String> = tool.type.toolTypes
 }

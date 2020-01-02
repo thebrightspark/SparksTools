@@ -58,8 +58,7 @@ class CustomTool(val data: CustomToolData) {
 			if (name.endsWith("Ingot"))
 				name = name.substringBefore("Ingot")
 			name.trim()
-		}
-		else
+		} else
 			"<null>"
 
 	/**
