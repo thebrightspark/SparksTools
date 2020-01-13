@@ -2,9 +2,10 @@ package brightspark.sparkstools.item
 
 data class CustomToolData(
 	val type: String,
-	val name: String?,
-	val material: String,
-	val textureColour: String?,
+	val name: String,
+	val headMaterial: String,
+	val handleMaterial: String?,
+	val textureColour: String,
 	val effectSize: Int?,
 	val harvestLevel: Int?,
 	val durability: Int?,

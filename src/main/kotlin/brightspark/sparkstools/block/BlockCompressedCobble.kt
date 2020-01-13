@@ -1,17 +1,11 @@
 package brightspark.sparkstools.block
 
-import brightspark.sparkstools.SparksTools
 import net.minecraft.block.Block
 import net.minecraft.block.SoundType
 import net.minecraft.block.material.Material
 
-class BlockCompressedCobble : Block(Material.ROCK) {
+class BlockCompressedCobble : Block(Properties.create(Material.ROCK).hardnessAndResistance(3F, 15F).sound(SoundType.STONE)) {
 	init {
 		setRegistryName("compressed_cobblestone")
-		translationKey = "compressed_cobblestone"
-		creativeTab = SparksTools.tab
-		setHardness(3F)
-		setResistance(15F)
-		soundType = SoundType.STONE
 	}
 }

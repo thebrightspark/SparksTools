@@ -1,115 +1,96 @@
 package brightspark.sparkstools
 
+import brightspark.ksparklib.api.*
+import brightspark.sparkstools.handler.ClientEventHandler
 import brightspark.sparkstools.init.SHBlocks
 import brightspark.sparkstools.init.SHItems
-import brightspark.sparkstools.init.SHRecipes
+import brightspark.sparkstools.item.CustomToolData
 import brightspark.sparkstools.item.SHToolItem
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import com.google.gson.stream.JsonReader
 import net.minecraft.block.Block
-import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.item.Item
+import net.minecraft.item.ItemGroup
 import net.minecraft.item.ItemStack
-import net.minecraft.item.crafting.IRecipe
 import net.minecraft.util.NonNullList
-import net.minecraftforge.client.event.ColorHandlerEvent
-import net.minecraftforge.client.event.ModelRegistryEvent
-import net.minecraftforge.common.config.Config
-import net.minecraftforge.common.config.ConfigManager
+import net.minecraftforge.client.event.*
 import net.minecraftforge.event.RegistryEvent
-import net.minecraftforge.fml.client.event.ConfigChangedEvent
+import net.minecraftforge.event.TickEvent
 import net.minecraftforge.fml.common.Mod
-import net.minecraftforge.fml.common.Mod.EventHandler
-import net.minecraftforge.fml.common.event.FMLInitializationEvent
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import net.minecraftforge.fml.relauncher.Side
-import net.minecraftforge.fml.relauncher.SideOnly
-import org.apache.commons.io.FileUtils
-import org.apache.logging.log4j.Logger
-import java.io.File
+import net.minecraftforge.fml.config.ModConfig
+import net.minecraftforge.fml.event.server.FMLServerAboutToStartEvent
+import net.minecraftforge.fml.loading.FMLPaths
+import java.io.FileReader
+import java.io.Reader
+import java.nio.file.Files
+import java.nio.file.Path
 
-@Mod(modid = SparksTools.MOD_ID, version = SparksTools.VERSION, useMetadata = true,
-	dependencies = "required-after:forgelin;",
-	modLanguageAdapter = "net.shadowfacts.forgelin.KotlinAdapter")
-@Mod.EventBusSubscriber
+@Mod(SparksTools.MOD_ID)
 object SparksTools {
 	const val MOD_ID = "sparkstools"
-	const val VERSION = "@VERSION@"
 
-	lateinit var logger: Logger
-	lateinit var customToolsFile: File
+	private var customToolsFile: Path
+	private val gson = Gson()
+	val logger = getLogger()
 
-	val tab = object : CreativeTabs(MOD_ID) {
+	init {
+//		addModListener<FMLClientSetupEvent> { SHItems.calcMissingMaterialColours() }
+		addModListener<ModConfig.ModConfigEvent> { if (it.config.modId == MOD_ID) SHConfig.bake() }
+		addModGenericListener<RegistryEvent.Register<Block>, Block> { SHBlocks.regBlocks(it.registry) }
+		addModGenericListener<RegistryEvent.Register<Item>, Item> { event ->
+			event.registry.let {
+				SHBlocks.regItemBlocks(it)
+				SHItems.regItems(it)
+			}
+		}
+		runWhenOnClient {
+			addModListener<TextureStitchEvent.Pre> { SHItems.regTextures(it) }
+			addModListener<ModelRegistryEvent> { SHItems.regModels() }
+			addModListener<ModelBakeEvent> { SHItems.regBakedModels(it) }
+			addModListener<ColorHandlerEvent.Item> { SHItems.regColours(it) }
+			addForgeListener<TickEvent.ClientTickEvent> { ClientEventHandler.updateSelection(it) }
+			addForgeListener<RenderWorldLastEvent> { ClientEventHandler.renderSelection(it) }
+		}
+		addForgeListener<FMLServerAboutToStartEvent> {
+			it.server.resourceManager.addReloadListener(DynamicRecipeDataPack)
+		}
+
+		val configDir = FMLPaths.CONFIGDIR.get().resolve(MOD_ID)
+		Files.createDirectories(configDir)
+		customToolsFile = configDir.resolve("custom_tools.json")
+		if (Files.notExists(customToolsFile))
+			this::class.java.getResourceAsStream("/assets/$MOD_ID/custom_tools_default.json").use {
+				Files.copy(it, customToolsFile)
+			}
+
+		registerConfig(common = SHConfig.COMMON_SPEC)
+	}
+
+	val group = object : ItemGroup(MOD_ID) {
 		private val sorter = Comparator<ItemStack> { o1, o2 ->
 			val item1 = o1.item
 			val item2 = o2.item
 			return@Comparator if (item1 is SHToolItem && item2 is SHToolItem)
-				item1.tool.material[0].item.registryName!!.compareTo(item2.tool.material[0].item.registryName!!)
+				item1.tool.harvestLevel.compareTo(item2.tool.harvestLevel)
 			else if (item1 !is SHToolItem || item2 !is SHToolItem)
 				if (item1 !is SHToolItem) -1 else 1
 			else
 				item1.registryName!!.compareTo(item2.registryName!!)
 		}
 
-		// Unused
-		override fun createIcon(): ItemStack = ItemStack.EMPTY
+		override fun createIcon() = ItemStack.EMPTY
 
-		override fun getIcon(): ItemStack = SHItems.getTabIcon()
+		override fun getIcon() = SHItems.getTabIcon()
 
-		override fun displayAllRelevantItems(stacks: NonNullList<ItemStack>) {
-			super.displayAllRelevantItems(stacks)
-			stacks.sortWith(sorter)
+		override fun fill(items: NonNullList<ItemStack>) {
+			super.fill(items)
+			items.sortWith(sorter)
 		}
 	}
 
-	@EventHandler
-	fun preInit(event: FMLPreInitializationEvent) {
-		logger = event.modLog
-		val configDir = File(event.modConfigurationDirectory, MOD_ID)
-		configDir.mkdirs()
-		customToolsFile = File(configDir, "custom_tools.json")
-		if (!customToolsFile.exists())
-			this::class.java.getResourceAsStream("/assets/$MOD_ID/custom_tools_default.json").use { FileUtils.copyToFile(it, customToolsFile) }
-	}
-
-	@EventHandler
-	fun init(event: FMLInitializationEvent) {
-		if (event.side == Side.CLIENT)
-			SHItems.calcMissingMaterialColours()
-	}
-
-	@SubscribeEvent
-	@JvmStatic
-	fun configChanged(event: ConfigChangedEvent.OnConfigChangedEvent) {
-		if (event.modID == MOD_ID)
-			ConfigManager.sync(MOD_ID, Config.Type.INSTANCE)
-	}
-
-	@SubscribeEvent
-	@JvmStatic
-	fun regBlocks(event: RegistryEvent.Register<Block>) = SHBlocks.regBlocks(event.registry)
-
-	@SubscribeEvent
-	@JvmStatic
-	fun regItems(event: RegistryEvent.Register<Item>) {
-		val registry = event.registry
-		SHBlocks.regItemBlocks(registry)
-		SHItems.regItems(registry)
-	}
-
-	@SubscribeEvent
-	@JvmStatic
-	fun regRecipes(event: RegistryEvent.Register<IRecipe>) = SHRecipes.regRecipes(event.registry)
-
-	@SideOnly(Side.CLIENT)
-	@SubscribeEvent
-	@JvmStatic
-	fun regModels(event: ModelRegistryEvent) {
-		SHItems.regModels()
-		SHBlocks.regModels()
-	}
-
-	@SideOnly(Side.CLIENT)
-	@SubscribeEvent
-	@JvmStatic
-	fun regColours(event: ColorHandlerEvent.Item) = SHItems.regColours(event)
+	fun readCustomTools(): List<CustomToolData> = gson.fromJson<List<CustomToolData>>(
+		JsonReader(FileReader(customToolsFile.toFile()) as Reader),
+		object : TypeToken<List<CustomToolData>>() {}.type
+	)
 }

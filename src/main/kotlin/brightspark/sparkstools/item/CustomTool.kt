@@ -3,86 +3,82 @@ package brightspark.sparkstools.item
 import brightspark.sparkstools.SparksTools
 import com.google.common.base.MoreObjects
 import net.minecraft.item.Item
-import net.minecraft.item.ItemStack
-import net.minecraft.util.NonNullList
+import net.minecraft.item.crafting.Ingredient
+import net.minecraft.tags.ItemTags
+import net.minecraft.tags.Tag
 import net.minecraft.util.ResourceLocation
-import net.minecraftforge.oredict.OreDictionary
+import net.minecraftforge.common.Tags
+import net.minecraftforge.registries.ForgeRegistries
 import kotlin.math.abs
 
+@Suppress("SENSELESS_COMPARISON")
 class CustomTool(val data: CustomToolData) {
+	companion object {
+		private val REGEX_WHITESPACE = Regex("\\s")
+	}
 
 	init {
-		@Suppress("SENSELESS_COMPARISON")
 		if (data.type == null)
-			throw RuntimeException("The following tool has no type! $data")
-		@Suppress("SENSELESS_COMPARISON")
-		if (data.material == null)
-			throw RuntimeException("The following tool has no material! $data")
+			error("type")
+		if (data.name == null)
+			error("name")
+		if (data.headMaterial == null)
+			error("material")
+		if (data.textureColour == null)
+			error("textureColour")
 	}
+
+	private fun error(dataName: String): Unit = throw RuntimeException("The following tool has no $dataName! -> $data")
 
 	/**
 	 * The type of this tool
 	 */
-	val type = ToolType.valueOf(data.type.replace(Regex("\\s"), "_").toUpperCase())
+	val type: STToolType = STToolType.valueOf(data.type.replace(REGEX_WHITESPACE, "_").toUpperCase())
 
-	/**
-	 * A list of [ItemStack]s that can be used to create this tool
-	 */
-	val material: NonNullList<ItemStack> = data.material.let material@{
-		val colons = it.count { c -> c == ':' }
-		if (colons > 0) {
-			val regName = if (colons == 1) it else it.substringBeforeLast(':')
-			val meta = if (colons == 1) 0 else it.substringAfterLast(':', "0").toIntOrNull() ?: 0
-			Item.getByNameOrId(regName)?.let { item ->
-				return@let NonNullList.from(ItemStack.EMPTY, ItemStack(item, 1, meta))
-			}?.let { stack ->
-				return@material stack
-			}
-			SparksTools.logger.warn("Tried parsing material '$it' as an item unsuccessfully (tried using registry name '$regName' and meta '$meta') - falling back to trying ore dictionary")
-		}
+	private fun resolveItem(registryName: String): Item =
+		ForgeRegistries.ITEMS.getValue(ResourceLocation(data.headMaterial))
+			?: throw RuntimeException("The item '$registryName' does not exist!")
 
-		val stacks = OreDictionary.getOres(it)
-		if (stacks.isEmpty())
-			throw RuntimeException("Couldn't find an item or ore dictionary for the material $it")
-		return@material stacks
+	private fun resolveItemTag(tagName: String): Tag<Item> =
+		ItemTags.getCollection()[ResourceLocation(tagName)]
+			?: throw RuntimeException("The item tag '$tagName' does not exist!")
+
+	private fun resolveIngredient(material: String): Ingredient = if (material.contains(':')) {
+		Ingredient.fromItems(resolveItem(material))
+	} else {
+		Ingredient.fromTag(resolveItemTag(material))
 	}
 
 	/**
-	 * Gets the name of the material [ItemStack] to be prepended to the tool's type for item name generation
+	 * The [Ingredient] used as the material for the head of this tool
 	 */
-	private fun getMaterialName(): String =
-		if (material.isNotEmpty()) {
-			var name = material[0].displayName
-			if (name.startsWith("Block of "))
-				name = name.substringAfter("Block of ")
-			if (name.endsWith("Ingot"))
-				name = name.substringBefore("Ingot")
-			name.trim()
-		} else
-			"<null>"
+	val headMaterial: Ingredient by lazy { resolveIngredient(data.headMaterial) }
+
+	/**
+	 * The [Ingredient] used as the material for the handle of this tool
+	 */
+	val handleMaterial: Ingredient by lazy {
+		data.handleMaterial?.let { resolveIngredient(it) } ?: Ingredient.fromTag(Tags.Items.RODS_WOODEN)
+	}
 
 	/**
 	 * The display name for the item
 	 */
-	val name = data.name ?: "${getMaterialName()} ${type.formattedName}"
+	val name: String
+		get() = data.name
 
 	/**
 	 * The [name] converted into a [ResourceLocation] to be used as the item registry name
 	 */
-	val registryName = ResourceLocation(SparksTools.MOD_ID, name.toLowerCase().replace(Regex("\\s"), "_"))
+	val registryName: ResourceLocation =
+		ResourceLocation(SparksTools.MOD_ID, name.toLowerCase().replace(REGEX_WHITESPACE, "_"))
 
 	/**
 	 * The colour to use when colouring the texture
 	 */
-	var textureColour = data.textureColour?.let {
-		var colour: Int? = null
-		// Hexadecimal colour
-		if (it.startsWith("0x"))
-			colour = it.substringAfter("0x").toIntOrNull(16)
-		// Decimal colour
-		if (colour == null)
-			colour = it.toIntOrNull()
-		return@let colour
+	var textureColour: Int = data.textureColour.let {
+		(if (it.startsWith("0x")) it.substringAfter("0x").toIntOrNull(16) else it.toIntOrNull())
+			?: throw RuntimeException("The colour '$it' is invalid!")
 	}
 
 	val effectSize: Int
@@ -106,13 +102,11 @@ class CustomTool(val data: CustomToolData) {
 	val enchantability: Int
 		get() = data.enchantability?.let { abs(it) } ?: 0
 
-	override fun toString(): String {
-		return MoreObjects.toStringHelper(this)
-			.add("type", type)
-			.add("name", name)
-			.add("registryName", registryName)
-			.add("material", data.material)
-			.add("textureColour", textureColour)
-			.toString()
-	}
+	override fun toString(): String = MoreObjects.toStringHelper(this)
+		.add("type", type)
+		.add("name", name)
+		.add("registryName", registryName)
+		.add("material", data.headMaterial)
+		.add("textureColour", textureColour)
+		.toString()
 }

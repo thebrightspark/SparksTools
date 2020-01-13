@@ -1,52 +1,55 @@
 package brightspark.sparkstools.item
 
+import brightspark.ksparklib.api.damageItem
 import brightspark.sparkstools.ToolUtils
 import net.minecraft.block.Block
-import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.init.Blocks
-import net.minecraft.init.SoundEvents
+import net.minecraft.block.Blocks
+import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.item.ItemStack
-import net.minecraft.util.EnumActionResult
-import net.minecraft.util.EnumFacing
-import net.minecraft.util.EnumHand
-import net.minecraft.util.SoundCategory
+import net.minecraft.item.ItemUseContext
+import net.minecraft.util.*
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
+import java.util.stream.Stream
 
 class ItemExcavator(tool: CustomTool) : SHToolItem(tool) {
 	companion object {
 		private val pathableBlocks = arrayOf<Block>(Blocks.GRASS)
 	}
 
-	override fun getBlocksToBreakIfEffective(stack: ItemStack, pos: BlockPos, side: EnumFacing, player: EntityPlayer): Iterable<BlockPos> =
+	override fun getBlocksToBreakIfEffective(stack: ItemStack, pos: BlockPos, side: Direction, player: PlayerEntity): Stream<BlockPos> =
 		ToolUtils.getSquareBreakArea(stack, pos, side, player)
 
-	override fun onItemUse(player: EntityPlayer, world: World, pos: BlockPos, hand: EnumHand, facing: EnumFacing, hitX: Float, hitY: Float, hitZ: Float): EnumActionResult {
-		val stack = player.getHeldItem(hand)
-		if (facing == EnumFacing.DOWN || !world.isAirBlock(pos.up()))
-			return EnumActionResult.PASS
+	override fun onItemUse(context: ItemUseContext): ActionResultType {
+		val world = context.world
+		val player = context.player
+		val stack = context.item
+		val pos = context.pos
+		val facing = context.face
+		if (facing == Direction.DOWN || !world.isAirBlock(pos.up()))
+			return ActionResultType.PASS
 
 		if (world.getBlockState(pos).block != Blocks.GRASS)
-			return EnumActionResult.PASS
+			return ActionResultType.PASS
 
 		var result = false
-		if (facing == EnumFacing.UP)
-			ToolUtils.getGroundBlocks(stack, pos, player, pathableBlocks)
+		if (facing == Direction.UP)
+			ToolUtils.getGroundBlocks(stack, pos, world, pathableBlocks)
 				.forEach { result = createPath(player, stack, world, it) || result }
 		else
 			result = createPath(player, stack, world, pos)
 
-		return if (result) EnumActionResult.SUCCESS else EnumActionResult.PASS
+		return if (result) ActionResultType.SUCCESS else ActionResultType.PASS
 	}
 
-	private fun createPath(player: EntityPlayer, stack: ItemStack, world: World, pos: BlockPos): Boolean {
+	private fun createPath(player: PlayerEntity?, stack: ItemStack, world: World, pos: BlockPos): Boolean {
 		if (world.getBlockState(pos).block != Blocks.GRASS)
 			return false
 
 		world.playSound(player, pos, SoundEvents.ITEM_SHOVEL_FLATTEN, SoundCategory.BLOCKS, 1.0f, 1.0f)
 		if (!world.isRemote) {
 			world.setBlockState(pos, Blocks.GRASS_PATH.defaultState, 11)
-			stack.damageItem(1, player)
+			stack.damageItem(world, player)
 		}
 		return true
 	}
