@@ -6,6 +6,7 @@ import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
 import net.minecraft.util.NonNullList
 import net.minecraft.util.ResourceLocation
+import net.minecraft.util.text.TextFormatting
 import net.minecraftforge.oredict.OreDictionary
 import kotlin.math.abs
 
@@ -25,26 +26,28 @@ class CustomTool(val data: CustomToolData) {
 	 */
 	val type = ToolType.valueOf(data.type.replace(Regex("\\s"), "_").toUpperCase())
 
+	private val materialSplit = data.material.split(':')
+
 	/**
 	 * A list of [ItemStack]s that can be used to create this tool
 	 */
-	val material: NonNullList<ItemStack> = data.material.let material@{
-		val colons = it.count { c -> c == ':' }
-		if (colons > 0) {
-			val regName = if (colons == 1) it else it.substringBeforeLast(':')
-			val meta = if (colons == 1) 0 else it.substringAfterLast(':', "0").toIntOrNull() ?: 0
+	val material: NonNullList<ItemStack> by lazy {
+		val parts = materialSplit.size
+		if (parts > 1) {
+			val regName = if (parts == 2) data.material else "${materialSplit[0]}:${materialSplit[1]}"
+			val meta = if (parts == 2) 0 else materialSplit[2].toIntOrNull() ?: 0
 			Item.getByNameOrId(regName)?.let { item ->
 				return@let NonNullList.from(ItemStack.EMPTY, ItemStack(item, 1, meta))
 			}?.let { stack ->
-				return@material stack
+				return@lazy stack
 			}
-			SparksTools.logger.warn("Tried parsing material '$it' as an item unsuccessfully (tried using registry name '$regName' and meta '$meta') - falling back to trying ore dictionary")
+			SparksTools.logger.warn("Tried parsing material '${data.material}' as an item unsuccessfully (tried using registry name '$regName' and meta '$meta') - falling back to trying ore dictionary")
 		}
 
-		val stacks = OreDictionary.getOres(it)
+		val stacks = OreDictionary.getOres(data.material)
 		if (stacks.isEmpty())
-			throw RuntimeException("Couldn't find an item or ore dictionary for the material $it")
-		return@material stacks
+			throw RuntimeException("Couldn't find an item or ore dictionary for the material ${data.material}")
+		return@lazy stacks
 	}
 
 	/**
@@ -64,12 +67,13 @@ class CustomTool(val data: CustomToolData) {
 	/**
 	 * The display name for the item
 	 */
-	val name = data.name ?: "${getMaterialName()} ${type.formattedName}"
+	val name: String by lazy { data.name ?: "${getMaterialName()} ${type.formattedName}" }
 
 	/**
 	 * The [name] converted into a [ResourceLocation] to be used as the item registry name
 	 */
-	val registryName = ResourceLocation(SparksTools.MOD_ID, name.toLowerCase().replace(Regex("\\s"), "_"))
+	val registryName = ResourceLocation(SparksTools.MOD_ID, (data.name?.replace(Regex("\\s"), "_")
+		?: "${type.name}_${materialSplit.take(2).joinToString("_")}").toLowerCase())
 
 	/**
 	 * The colour to use when colouring the texture
@@ -106,13 +110,10 @@ class CustomTool(val data: CustomToolData) {
 	val enchantability: Int
 		get() = data.enchantability?.let { abs(it) } ?: 0
 
-	override fun toString(): String {
-		return MoreObjects.toStringHelper(this)
-			.add("type", type)
-			.add("name", name)
-			.add("registryName", registryName)
-			.add("material", data.material)
-			.add("textureColour", textureColour)
-			.toString()
-	}
+	override fun toString(): String = MoreObjects.toStringHelper(this)
+		.add("type", type)
+		.add("registryName", registryName)
+		.add("material", data.material)
+		.add("textureColour", textureColour)
+		.toString()
 }
