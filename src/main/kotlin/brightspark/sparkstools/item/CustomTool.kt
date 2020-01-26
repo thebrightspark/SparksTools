@@ -55,7 +55,7 @@ class CustomTool(val data: CustomToolData) {
 	 */
 	private fun getMaterialName(): String =
 		if (material.isNotEmpty()) {
-			var name = material[0].displayName
+			var name = TextFormatting.getTextWithoutFormattingCodes(material[0].displayName)!!
 			if (name.startsWith("Block of "))
 				name = name.substringAfter("Block of ")
 			if (name.endsWith("Ingot"))
